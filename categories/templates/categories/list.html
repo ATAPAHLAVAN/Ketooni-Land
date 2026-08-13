@@ -1,0 +1,97 @@
+
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}دسته‌بندی‌ها - کتونی لند{% endblock %}
+{% block content %}
+<style>
+    @keyframes gradientShift { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+
+    .categories-hero {
+        background: linear-gradient(-45deg, #0a0e14, #1a202c, #2c1a3d, #1a202c);
+        background-size: 300% 300%;
+        animation: gradientShift 10s ease infinite;
+        color: white;
+        padding: 80px 40px;
+        text-align: center;
+        position: relative;
+    }
+    .categories-hero::after {
+        content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+        background: linear-gradient(90deg, transparent, #8B5CF6, #FFB800, #8B5CF6, transparent);
+    }
+    .categories-hero h1 { font-size: 3rem; font-weight: 900; margin-bottom: 12px; }
+    .categories-hero h1 span {
+        background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .categories-hero p { color: rgba(255,255,255,0.7); font-size: 1.05rem; }
+
+    .categories-container { padding: 70px 40px; max-width: 1400px; margin: 0 auto; }
+    .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 35px; }
+
+    .category-card-pro {
+        background: white; border-radius: 16px; overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.5s ease; opacity:0; animation: fadeInUp 0.6s ease forwards;
+    }
+    .category-card-pro:nth-child(1){animation-delay:.05s}.category-card-pro:nth-child(2){animation-delay:.1s}
+    .category-card-pro:nth-child(3){animation-delay:.15s}.category-card-pro:nth-child(4){animation-delay:.2s}
+    .category-card-pro:nth-child(5){animation-delay:.25s}.category-card-pro:nth-child(6){animation-delay:.3s}
+    .category-card-pro:nth-child(7){animation-delay:.35s}.category-card-pro:nth-child(8){animation-delay:.4s}
+
+    .category-card-pro:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 25px 60px rgba(139, 92, 246, 0.3);
+    }
+    .category-image-pro {
+        height: 260px; background: linear-gradient(135deg, #1a202c, #2c1a3d);
+        display: flex; align-items: center; justify-content: center; font-size: 5rem; overflow: hidden; position: relative;
+    }
+    .category-image-pro img { width:100%; height:100%; object-fit:cover; transition: transform 0.6s ease; }
+    .category-card-pro:hover .category-image-pro img { transform: scale(1.15); }
+    .category-badge-pro {
+        position: absolute; top: 15px; right: 15px;
+        background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; z-index: 10;
+    }
+    .category-info-pro { padding: 28px; }
+    .category-name-pro { font-size: 1.5rem; font-weight: 900; color: #1a202c; margin-bottom: 8px; transition: color .3s; }
+    .category-card-pro:hover .category-name-pro { color: #8B5CF6; }
+    .category-count-pro { color: #8B5CF6; font-weight: 800; margin-bottom: 14px; font-size: 0.95rem; }
+    .category-btn-pro {
+        width: 100%; padding: 12px; background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        color: white; border: none; border-radius: 10px; font-weight: 900; cursor: pointer;
+        transition: all .4s; text-decoration: none; display: block; text-align:center; font-size: 0.95rem;
+    }
+    .category-btn-pro:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(139, 92, 246, 0.4); }
+    .empty-state { grid-column: 1/-1; text-align: center; padding: 80px 40px; color: #718096; }
+    @media (max-width: 768px) { .categories-grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="categories-hero">
+    <h1>دسته‌بندی <span>محصول</span></h1>
+    <p>محبوب‌ترین برندهای دنیا در یک‌جا</p>
+</div>
+
+<div class="categories-container">
+    <div class="categories-container">
+    <div class="categories-grid">
+        {% for category in categories %}
+        <div class="category-card-pro">
+            <div class="category-image-pro">
+                {% if category.image %}<img src="{{ category.image.url }}" alt="{{ category.name }}">{% else %}👟{% endif %}
+                <div class="category-badge-pro">جدید</div>
+            </div>
+            <div class="category-info-pro">
+                <h3 class="category-name-pro">{{ category.name }}</h3>
+                <p class="category-count-pro">{{ category.product_set.count }} محصول</p>
+                <a href="{% url 'products:category' category.slug %}" class="category-btn-pro">مرور محصول‌ها</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state"><h2>دسته‌بندی موجود نیست</h2></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

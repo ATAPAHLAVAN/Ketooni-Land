@@ -1,0 +1,9 @@
+{
+  "platform": "django",
+  "app": "ketooniland",
+  "port": 8000,
+  "django": {
+    "collectstatic": true,
+    "geventWorker": false
+  }
+}

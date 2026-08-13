@@ -1,0 +1,25 @@
+/* 
+   LUXURY COLOR SCHEME
+   Modern + Elegant + Professional
+*/
+
+:root {
+    /* Primary Colors */
+    --primary-dark: #0f0f0f;
+    --primary-light: #1a1a1a;
+    --secondary-dark: #2d2d2d;
+    --secondary-light: #3d3d3d;
+    
+    /* Accent Colors */
+    --accent-gold: #d4af37;
+    --accent-orange: #ff8c42;
+    --accent-green: #2ecc71;
+    
+    /* Neutral Colors */
+    --bg-white: #ffffff;
+    --bg-light: #f5f5f5;
+    --border-light: #e0e0e0;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --text-light: #999999;
+}

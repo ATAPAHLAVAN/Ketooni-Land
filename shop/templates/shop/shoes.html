@@ -1,0 +1,344 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+
+<style>
+    /* Header */
+    .shoes-header {
+        background: linear-gradient(135deg, #1a1a1a 0%, #3d3d3d 100%);
+        color: white;
+        padding: 60px 20px;
+        border-radius: 20px;
+        margin-bottom: 50px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        animation: fadeInDown 0.8s ease;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .shoes-header h1 {
+        font-size: 3rem;
+        font-weight: 900;
+        margin: 0;
+        letter-spacing: 1px;
+    }
+
+    .shoes-header p {
+        font-size: 1.2rem;
+        margin-top: 10px;
+        opacity: 0.9;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .filter-bar input, 
+    .filter-bar select {
+        padding: 12px 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .filter-bar input:focus, 
+    .filter-bar select:focus {
+        outline: none;
+        border-color: #1a1a1a;
+        box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+    }
+
+    .filter-bar input::placeholder {
+        color: #999;
+    }
+
+    .filter-bar button {
+        background: linear-gradient(135deg, #1a1a1a 0%, #3d3d3d 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 800;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        font-size: 1rem;
+    }
+
+    .filter-bar button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .filter-bar button:active {
+        transform: translateY(-1px);
+    }
+
+    /* Shoes Grid */
+    .shoes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+
+    /* Shoe Item */
+    .shoe-item {
+        background: white;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+        border: 2px solid transparent;
+        animation: fadeInUp 0.6s ease;
+        animation-fill-mode: both;
+    }
+
+    .shoe-item:nth-child(1) { animation-delay: 0.1s; }
+    .shoe-item:nth-child(2) { animation-delay: 0.2s; }
+    .shoe-item:nth-child(3) { animation-delay: 0.3s; }
+    .shoe-item:nth-child(4) { animation-delay: 0.4s; }
+    .shoe-item:nth-child(5) { animation-delay: 0.5s; }
+    .shoe-item:nth-child(6) { animation-delay: 0.6s; }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .shoe-item:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        border-color: #1a1a1a;
+    }
+
+    /* Shoe Image */
+    .shoe-image {
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        height: 240px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 90px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .shoe-image::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+        0%  {transform: translate(-100%, -100%) rotate(45deg); }
+        100% { transform: translate(100%, 100%) rotate(45deg); }
+    }
+
+    /* Shoe Details */
+    .shoe-details {
+        padding: 25px;
+    }
+
+    .shoe-details h3 {
+        margin: 0 0 12px 0;
+        color: #1a1a1a;
+        font-weight: 900;
+        font-size: 1.3rem;
+        transition: color 0.3s ease;
+    }
+
+    .shoe-item:hover .shoe-details h3 {
+        color: #000;
+    }
+
+    .shoe-details p {
+        color: #666;
+        font-size: 0.95rem;
+        margin: 8px 0;
+        font-weight: 500;
+    }
+
+    .shoe-rating {
+        color: #ffc107;
+        font-size: 1rem;
+        margin: 12px 0;
+        font-weight: 600;
+    }
+
+    .shoe-price {
+        font-size: 1.6rem;
+        color: #1a1a1a;
+        font-weight: 900;
+        margin: 15px 0 20px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .shoe-price::before {
+        content: '💰';
+        margin-left: 8px;
+        font-size: 1.4rem;
+    }
+
+    /* Shoe Button */
+    .shoe-btn {
+        background: linear-gradient(135deg, #1a1a1a 0%, #3d3d3d 100%);
+        color: white;
+        border: none;
+        padding: 13px 20px;
+        border-radius: 12px;
+        width: 100%;
+        cursor: pointer;
+        font-weight: 800;
+        font-size: 1.05rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .shoe-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .shoe-btn:active {
+        transform: translateY(-1px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .shoes-header h1 {
+            font-size: 2rem;
+        }
+
+        .filter-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-bar input, 
+        .filter-bar select,
+        .filter-bar button {
+            width: 100%;
+        }
+
+        .shoes-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+    }
+</style>
+
+<div class="shoes-header">
+    <h1>👟 تمام کفش‌ها</h1>
+    <p>بیش از ۱۰۰۰ مدل کفش با بهترین قیمت‌ها</p>
+</div>
+
+<div class="filter-bar">
+    <input type="text" placeholder="🔍 جستجو کفش...">
+    <select>
+        <option>📍 همه برندها</option>
+        <option>Nike</option>
+        <option>Adidas</option>
+        <option>Puma</option>
+        <option>Reebok</option>
+        <option>Converse</option>
+        <option>New Balance</option>
+    </select>
+    <select>
+        <option>📊 مرتب‌سازی</option>
+        <option>قیمت: کم به زیاد</option>
+        <option>قیمت: زیاد به کم</option>
+        <option>جدیدترین</option>
+        <option>پرفروش‌ترین</option>
+    </select>
+    <button>🔍 جستجو</button>
+</div>
+
+<div class="shoes-grid">
+    <!-- کفش 1 -->
+    <div class="shoe-item">
+        <div class="shoe-image">👟</div>
+        <div class="shoe-details">
+            <h3>Nike Air Max</h3>
+            <p class="shoe-rating">⭐⭐⭐⭐⭐ (234 نظر)</p>
+            <p>برند: Nike</p>
+            <p>سایز: 36-46</p>
+            <p class="shoe-price">۴۵۰,۰۰۰</p>
+            <button class="shoe-btn">➕ اضافه به سبد</button>
+        </div>
+    </div>
+
+    <!-- کفش 2 -->
+    <div class="shoe-item">
+        <div class="shoe-image">👠</div>
+        <div class="shoe-details">
+            <h3>Adidas Ultraboost</h3>
+            <p class="shoe-rating">⭐⭐⭐⭐⭐ (189 نظر)</p>
+            <p>برند: Adidas</p>
+            <p>سایز: 36-46</p>
+            <p class="shoe-price">۵۲۰,۰۰۰</p>
+            <button class="shoe-btn">➕ اضافه به سبد</button>
+        </div>
+    </div>
+
+    <!-- کفش 3 -->
+    <div class="shoe-item">
+        <div class="shoe-image">🥾</div>
+        <div class="shoe-details">
+            <h3>Puma RS-X</h3>
+            <p class="shoe-rating">⭐⭐⭐⭐ (156 نظر)</p>
+            <p>برند: Puma</p>
+            <p>سایز: 36-45</p>
+            <p class="shoe-price">۳۸۰,۰۰۰</p>
+            <button class="shoe-btn">➕ اضافه به سبد</button>
+        </div>
+    </div>
+
+    <!-- کفش 4 -->
+    <div class="shoe-item">
+        <div class="shoe-image">👞</div>
+        <div class="shoe-details">
+            <h3>New Balance 990</h3>
+            <p class="shoe-rating">⭐⭐⭐⭐⭐ (278 نظر)</p>
+            <p>برند: New Balance</p>
+            <p>سایز: 36-46</p>
+            <p class="shoe-price">۶۲۰,۰۰۰</p>
+            <button class="shoe-btn">➕ اضافه به سبد</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}سبد خرید - کتونی لند{% endblock %}
+{% block content %}
+<style>
+    @keyframes gradientShift { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+
+    .cart-header {
+        background: linear-gradient(-45deg, #0a0e14, #1a202c, #2c1a3d, #1a202c);
+        background-size: 300% 300%; animation: gradientShift 10s ease infinite;
+        color: white; padding: 55px 40px; text-align: center; position: relative;
+    }
+    .cart-header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+        background: linear-gradient(90deg, transparent, #8B5CF6, #FFB800, #8B5CF6, transparent); }
+    .cart-header h1 { font-size: 2.5rem; font-weight: 900; }
+
+    .cart-container { padding: 55px 40px; max-width: 1400px; margin: 0 auto; }
+    .cart-grid { display: grid; grid-template-columns: 1fr 380px; gap: 40px; }
+
+    .cart-items-section { background: white; border-radius: 16px; padding: 30px; border: 1px solid #e2e8f0; }
+    .cart-item { display: grid; grid-template-columns: 140px 1fr 100px; gap: 20px; align-items: center;
+        padding: 20px; border-bottom: 1px solid #e2e8f0; transition: all .3s ease; }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item:hover { background: #f7fafc; border-radius: 10px; }
+
+    .cart-item-image { width: 140px; height: 140px; background: linear-gradient(135deg, #1a202c, #2c1a3d);
+        border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; overflow: hidden; }
+    .cart-item-image img { width: 100%; height: 100%; object-fit: cover; }
+
+    .cart-item-info h3 { font-size: 1.1rem; font-weight: 900; color: #1a202c; margin-bottom: 8px; }
+    .cart-item-info p { color: #718096; font-size: 0.9rem; margin-bottom: 6px; }
+    .cart-item-price { font-size: 1.3rem; font-weight: 900; color: #8B5CF6; }
+
+    .cart-item-actions { display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+    .qty-input { width: 60px; padding: 6px; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; font-weight: 900; }
+    .btn-remove { padding: 8px 12px; background: #fed7d7; color: #c53030; border: none; border-radius: 8px;
+        font-weight: 900; cursor: pointer; font-size: 0.85rem; transition: all .3s ease; }
+    .btn-remove:hover { background: #fc8181; color: white; }
+
+    .cart-summary { background: linear-gradient(135deg, #f7fafc, white); border-radius: 16px; padding: 30px;
+        border: 2px solid #e2e8f0; height: fit-content; position: sticky; top: 100px; }
+    .summary-title { font-size: 1.3rem; font-weight: 950; color: #1a202c; margin-bottom: 20px;
+        padding-bottom: 15px; border-bottom: 2px solid #8B5CF6; }
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px;
+        border-bottom: 1px solid #e2e8f0; font-weight: 700; color: #718096; }
+    .summary-row.total { font-size: 1.4rem; font-weight: 950;
+        background: linear-gradient(135deg, #8B5CF6, #FFB800); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text; border: none; padding-bottom: 0; margin-bottom: 20px; }
+    .summary-row.discount-row { color: #1DD1A1; }
+
+    /* DISCOUNT CODE BOX */
+    .discount-box { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+    .discount-applied {
+        display: flex; justify-content: space-between; align-items: center;
+        background: rgba(29,209,161,0.1); border: 1px solid rgba(29,209,161,0.3);
+        border-radius: 10px; padding: 12px 15px; margin-bottom: 10px;
+    }
+    .discount-applied span { color: #0e8f6e; font-weight: 900; font-size: 0.9rem; }
+    .discount-remove-btn {
+        background: none; border: none; color: #c53030; cursor: pointer; font-weight: 900; font-size: 0.85rem;
+    }
+    .discount-form { display: flex; gap: 8px; }
+    .discount-input {
+        flex: 1; padding: 11px 14px; border: 2px solid #e2e8f0; border-radius: 10px;
+        font-size: 0.9rem; transition: all .3s ease;
+    }
+    .discount-input:focus { outline: none; border-color: #8B5CF6; }
+    .discount-apply-btn {
+        padding: 11px 20px; background: linear-gradient(135deg, #8B5CF6, #FFB800); color: white;
+        border: none; border-radius: 10px; font-weight: 900; cursor: pointer; font-size: 0.85rem; white-space: nowrap;
+        transition: all .3s ease;
+    }
+    .discount-apply-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139,92,246,0.3); }
+
+    .messages-box { margin-bottom: 20px; }
+    .msg-success { background: #d1fae5; color: #065f46; padding: 12px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; }
+    .msg-error { background: #fed7d7; color: #c53030; padding: 12px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; }
+
+    .btn-checkout { width: 100%; padding: 15px; background: linear-gradient(135deg, #8B5CF6, #FFB800); color: white;
+        border: none; border-radius: 10px; font-weight: 900; font-size: 1rem; cursor: pointer; transition: all .35s ease;
+        text-decoration: none; text-align: center; display: block; }
+    .btn-checkout:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4); color: white; }
+
+    .btn-continue-shopping { width: 100%; padding: 12px; background: white; color: #8B5CF6; border: 2px solid #8B5CF6;
+        border-radius: 10px; font-weight: 900; cursor: pointer; text-decoration: none; display: block; text-align: center;
+        transition: all .3s ease; margin-top: 10px; }
+    .btn-continue-shopping:hover { background: #f7fafc; }
+
+    .empty-cart { text-align: center; padding: 80px 40px; color: #718096; }
+    .empty-cart h2 { font-size: 1.8rem; font-weight: 900; color: #1a202c; margin-bottom: 15px; }
+    .empty-cart a { color: #8B5CF6; font-weight: 900; text-decoration: none; }
+
+    @media (max-width: 768px) {
+        .cart-grid { grid-template-columns: 1fr; }
+        .cart-summary { position: static; }
+        .cart-item { grid-template-columns: 100px 1fr; }
+        .cart-item-image { width: 100px; height: 100px; }
+    }
+</style>
+
+<div class="cart-header"><h1>سبد خرید</h1></div>
+
+<div class="cart-container">
+    {% if messages %}
+    <div class="messages-box">
+        {% for message in messages %}
+            <div class="{% if message.tags == 'success' %}msg-success{% else %}msg-error{% endif %}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if items %}
+    <div class="cart-grid">
+        <div class="cart-items-section">
+            {% for item in items %}
+            <div class="cart-item">
+                <div class="cart-item-image">
+                    {% if item.product.image %}<img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">{% else %}👟{% endif %}
+                </div>
+                <div class="cart-item-info">
+                    <h3>{{ item.product.name }}</h3>
+                    <p><strong>دسته:</strong> {{ item.product.category.name }}</p>
+                    {% if item.size %}<p><strong>سایز:</strong> {{ item.size }}</p>{% endif %}
+                    <div class="cart-item-price">{{ item.product.get_price|floatformat:0 }} تومان</div>
+                </div>
+                <div class="cart-item-actions">
+                    <form method="POST" action="{% url 'cart:update_cart_item' item.id %}" style="display: flex; gap: 8px;">
+                        {% csrf_token %}
+                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="qty-input">
+                        <button type="submit" style="background: linear-gradient(135deg,#8B5CF6,#FFB800); color: white; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 0.85rem; padding: 0 10px;">تحدیث</button>
+                    </form>
+                    <form method="POST" action="{% url 'cart:remove_from_cart' item.id %}" style="margin: 0;">
+                        {% csrf_token %}<button type="submit" class="btn-remove">حذف</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary">
+            <div class="summary-title">خلاصهٔ سفارش</div>
+
+            <!-- DISCOUNT CODE -->
+            <div class="discount-box">
+                {% if discount_percent %}
+                    <div class="discount-applied">
+                        <span>✓ کد "{{ discount_code }}" ({{ discount_percent }}%) اعمال شد</span>
+                        <form method="POST" action="{% url 'cart:remove_discount' %}" style="margin:0;">
+                            {% csrf_token %}
+                            <button type="submit" class="discount-remove-btn">حذف</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <form method="POST" action="{% url 'cart:apply_discount' %}" class="discount-form">
+                        {% csrf_token %}
+                        <input type="text" name="code" class="discount-input" placeholder="کد تخفیف را وارد کنید">
+                        <button type="submit" class="discount-apply-btn">اعمال کد</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <div class="summary-row"><span>تعداد محصول:</span><span>{{ items|length }}</span></div>
+            <div class="summary-row"><span>جمع محصولات:</span><span>{{ subtotal|floatformat:0 }} تومان</span></div>
+            {% if discount_amount %}
+            <div class="summary-row discount-row"><span>تخفیف ({{ discount_percent }}%):</span><span>- {{ discount_amount|floatformat:0 }} تومان</span></div>
+            {% endif %}
+            <div class="summary-row"><span>ارسال:</span><span>رایگان</span></div>
+            <div class="summary-row total"><span>جمع نهایی:</span><span>{{ total|floatformat:0 }} تومان</span></div>
+            <a href="{% url 'orders:order_create' %}" class="btn-checkout">ادامهٔ فرآیند خریداری</a>
+            <a href="{% url 'products:product_list' %}" class="btn-continue-shopping">ادامهٔ خریداری</a>
+        </div>
+    </div>
+    {% else %}
+    <div class="cart-items-section">
+        <div class="empty-cart">
+            <h2>سبد خرید شما خالی است</h2>
+            <p>برای شروع خریداری <a href="{% url 'products:product_list' %}">محصول‌ها</a> را مرور کنید</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

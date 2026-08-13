@@ -1,0 +1,108 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}علاقه‌مندی‌های من - کتونی لند{% endblock %}
+{% block content %}
+<style>
+    @keyframes gradientShift { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+
+    .wishlist-header {
+        background: linear-gradient(-45deg, #0a0e14, #1a202c, #2c1a3d, #1a202c);
+        background-size: 300% 300%; animation: gradientShift 10s ease infinite;
+        color: white; padding: 55px 40px; text-align: center; position: relative;
+    }
+    .wishlist-header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+        background: linear-gradient(90deg, transparent, #8B5CF6, #FFB800, #8B5CF6, transparent); }
+    .wishlist-header h1 { font-size: 2.5rem; font-weight: 900; }
+
+    .wishlist-container { padding: 55px 40px; max-width: 1400px; margin: 0 auto; }
+    .wishlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 30px; }
+
+    .wishlist-item { background: white; border-radius: 16px; overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all .4s ease; }
+    .wishlist-item:hover { transform: translateY(-10px); box-shadow: 0 20px 50px rgba(139, 92, 246, 0.25); }
+
+    .wishlist-item-image { height: 220px; background: linear-gradient(135deg, #1a202c, #2c1a3d);
+        display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 4rem; position: relative; }
+    .wishlist-item-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+    .wishlist-item:hover .wishlist-item-image img { transform: scale(1.1); }
+
+    .wishlist-remove-btn { position: absolute; top: 10px; right: 10px; background: white; color: #c53030;
+        border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: 900;
+        font-size: 1.2rem; transition: all .3s ease; display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .wishlist-remove-btn:hover { background: #fc8181; color: white; transform: scale(1.1); }
+
+    .wishlist-item-info { padding: 20px; }
+    .wishlist-item-name { font-size: 1.1rem; font-weight: 900; color: #1a202c; margin-bottom: 8px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .wishlist-item-category { color: #8B5CF6; font-size: 0.85rem; font-weight: 800; margin-bottom: 10px; }
+    .wishlist-item-price { font-size: 1.2rem; font-weight: 900; color: #8B5CF6; margin-bottom: 14px; }
+
+    .wishlist-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .wishlist-btn { padding: 10px; border: none; border-radius: 10px; font-weight: 900; cursor: pointer;
+        transition: all .3s ease; text-decoration: none; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+    .btn-add-cart { background: linear-gradient(135deg, #8B5CF6, #FFB800); color: white; }
+    .btn-add-cart:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4); }
+    .btn-view { background: white; color: #8B5CF6; border: 2px solid #8B5CF6; }
+    .btn-view:hover { background: #f7fafc; }
+
+    .empty-wishlist { text-align: center; padding: 80px 40px; color: #718096; }
+    .empty-wishlist h2 { font-size: 1.8rem; font-weight: 900; color: #1a202c; margin-bottom: 15px; }
+    .empty-wishlist a { color: #8B5CF6; font-weight: 900; text-decoration: none; }
+
+    @media (max-width: 768px) { .wishlist-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
+</style>
+
+<div class="wishlist-header"><h1>علاقه‌مندی‌های من</h1></div>
+
+<div class="wishlist-container">
+    {% if products %}
+    <div class="wishlist-grid">
+        {% for product in products %}
+        <div class="wishlist-item">
+            <div class="wishlist-item-image">
+                {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">{% else %}👟{% endif %}
+                <form method="POST" action="{% url 'wishlist:remove_from_wishlist' product.id %}" style="position: absolute;">
+                    {% csrf_token %}<button type="submit" class="wishlist-remove-btn" title="حذف">✕</button>
+                </form>
+            </div>
+            <div class="wishlist-item-info">
+                <div class="wishlist-item-category">{{ product.category.name }}</div>
+                <h3 class="wishlist-item-name">{{ product.name }}</h3>
+                <div class="wishlist-item-price">
+                    {% if product.discount_price %}
+                        <span style="font-size: 0.8rem; color: #999; text-decoration: line-through;">{{ product.price }}</span>
+                        {{ product.discount_price }}
+                    {% else %}{{ product.price }}{% endif %}
+                </div>
+                <div class="wishlist-buttons">
+                    <button class="wishlist-btn btn-add-cart" onclick="addToCart({{ product.id }})">سبد خرید</button>
+                    <a href="{% url 'products:product_detail' product.slug %}" class="wishlist-btn btn-view">نمایش</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="background: white; border-radius: 16px; padding: 40px;">
+        <div class="empty-wishlist">
+            <h2>هیچ محصولی در علاقه‌مندی نیست</h2>
+            <p>برای افزودن محصولات <a href="{% url 'products:product_list' %}">محصول‌ها</a> را مرور کنید</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function addToCart(productId) {
+    {% if user.is_authenticated %}
+        const formData = new FormData();
+        formData.append('product_id', productId);
+        formData.append('quantity', 1);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        fetch('{% url "cart:add_to_cart" %}', { method: 'POST', body: formData })
+        .then(r => r.json()).then(data => { if (data.success) alert(data.message); });
+    {% else %} window.location.href = '{% url "accounts:login" %}'; {% endif %}
+}
+</script>
+{% endblock %}

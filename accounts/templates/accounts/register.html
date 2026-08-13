@@ -1,0 +1,328 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}ثبت نام - کتونی لند{% endblock %}
+{% block content %}
+<style>
+    .lamp-page {
+        min-height: calc(100vh - 200px);
+        background: #0a0a0f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        padding: 40px;
+    }
+
+    .ambient-glow {
+        position: absolute;
+        top: 0; left: 50%;
+        width: 700px;
+        height: 700px;
+        transform: translateX(-50%);
+        background: radial-gradient(circle, rgba(139,92,246,0.25) 0%, rgba(255,184,0,0.08) 35%, transparent 70%);
+        opacity: 0;
+        transition: opacity 1.2s ease;
+        pointer-events: none;
+    }
+    .lamp-page.lit .ambient-glow { opacity: 1; }
+
+    .scene {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 2;
+    }
+
+    .lamp-wrap {
+        position: relative;
+        width: 220px;
+        height: 260px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .lamp-shade {
+        width: 160px;
+        height: 80px;
+        background: #e8e6e0;
+        border-radius: 100px 100px 20px 20px / 80px 80px 15px 15px;
+        position: relative;
+        z-index: 3;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: box-shadow 0.6s ease, background 0.6s ease;
+    }
+
+    .lamp-page.lit .lamp-shade {
+        background: #fdf8ec;
+        box-shadow: 0 0 60px 20px rgba(255, 220, 130, 0.55), 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .light-cone {
+        position: absolute;
+        top: 78px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 90px solid transparent;
+        border-right: 90px solid transparent;
+        border-top: 260px solid rgba(255, 220, 130, 0);
+        transition: border-top-color 0.8s ease;
+        z-index: 1;
+        pointer-events: none;
+    }
+    .lamp-page.lit .light-cone {
+        border-top-color: rgba(255, 220, 130, 0.12);
+    }
+
+    .lamp-pole {
+        width: 8px;
+        height: 110px;
+        background: linear-gradient(90deg, #b8b5ad, #e8e6e0, #b8b5ad);
+        z-index: 2;
+    }
+
+    .lamp-base {
+        width: 70px;
+        height: 12px;
+        background: #d8d5cc;
+        border-radius: 6px;
+        z-index: 2;
+    }
+
+    .pull-cord {
+        position: absolute;
+        top: 55px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 55px;
+        background: #999;
+        cursor: pointer;
+        z-index: 5;
+        transition: height 0.15s ease;
+    }
+
+    .pull-cord::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 14px;
+        height: 14px;
+        background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .pull-cord:hover { height: 62px; }
+    .pull-cord.pulled { animation: cordPull 0.4s ease; }
+
+    @keyframes cordPull {
+        0% { height: 55px; }
+        40% { height: 85px; }
+        100% { height: 55px; }
+    }
+
+    .lamp-hint {
+        color: rgba(255,255,255,0.35);
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-top: 18px;
+        text-align: center;
+        animation: hintPulse 2s ease-in-out infinite;
+        transition: opacity 0.5s ease;
+    }
+    .lamp-page.lit .lamp-hint { opacity: 0; }
+
+    @keyframes hintPulse { 0%,100% { opacity: 0.35; } 50% { opacity: 0.7; } }
+
+    /* ===== فرم ثبت‌نام ===== */
+    .login-card-lamp {
+        margin-top: 30px;
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        padding: 40px;
+        width: 100%;
+        max-width: 420px;
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+        transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none;
+    }
+
+    .lamp-page.lit .login-card-lamp {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: all;
+        box-shadow: 0 30px 80px rgba(139,92,246,0.15);
+    }
+
+    .login-card-lamp h1 {
+        text-align: center;
+        font-size: 1.7rem;
+        font-weight: 950;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .login-card-lamp .subtitle {
+        text-align: center;
+        color: rgba(255,255,255,0.45);
+        font-size: 0.85rem;
+        margin-bottom: 28px;
+    }
+
+    .form-group-lamp { margin-bottom: 16px; }
+    .form-group-lamp label {
+        display: block;
+        margin-bottom: 7px;
+        color: rgba(255,255,255,0.7);
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+    .form-group-lamp input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 10px;
+        background: rgba(255,255,255,0.05);
+        color: white;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    .form-group-lamp input::placeholder { color: rgba(255,255,255,0.3); }
+    .form-group-lamp input:focus {
+        outline: none;
+        border-color: #FFB800;
+        background: rgba(255,255,255,0.08);
+        box-shadow: 0 0 0 3px rgba(255,184,0,0.15);
+    }
+    .form-help-lamp { font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-top: 5px; }
+
+    .login-btn-lamp {
+        width: 100%;
+        padding: 13px;
+        background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 900;
+        font-size: 0.95rem;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+    }
+    .login-btn-lamp:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(139,92,246,0.4);
+    }
+
+    .lamp-footer {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .lamp-footer p { color: rgba(255,255,255,0.4); font-size: 0.82rem; margin-bottom: 6px; }
+    .lamp-footer a { color: #FFB800; text-decoration: none; font-weight: 800; font-size: 0.85rem; }
+    .lamp-footer a:hover { color: #8B5CF6; }
+
+    .error-message-lamp {
+        background: rgba(197,48,48,0.15);
+        border: 1px solid rgba(197,48,48,0.3);
+        color: #fc8181;
+        padding: 10px 14px;
+        border-radius: 10px;
+        margin-bottom: 18px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    @media (max-width: 480px) {
+        .login-card-lamp { padding: 28px 22px; }
+        .lamp-wrap { width: 180px; }
+        .lamp-shade { width: 130px; height: 65px; }
+    }
+</style>
+
+<div class="lamp-page" id="lampPage">
+    <div class="ambient-glow"></div>
+
+    <div class="scene">
+        <div class="lamp-wrap">
+            <div class="lamp-shade"></div>
+            <div class="light-cone"></div>
+            <div class="lamp-pole"></div>
+            <div class="lamp-base"></div>
+            <div class="pull-cord" id="pullCord"></div>
+        </div>
+
+        <div class="lamp-hint" id="lampHint">💡    </div>
+
+        <div class="login-card-lamp">
+            <h1>ثبت نام در کتونی لند</h1>
+            <p class="subtitle">حساب کاربری جدید ایجاد کنید</p>
+
+            {% if form.non_field_errors %}
+                <div class="error-message-lamp">{{ form.non_field_errors.0 }}</div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group-lamp">
+                    <label for="id_username">نام کاربری</label>
+                    <input type="text" id="id_username" name="username" placeholder="نام کاربری را انتخاب کنید" required>
+                </div>
+                <div class="form-group-lamp">
+                    <label for="id_email">ایمیل</label>
+                    <input type="email" id="id_email" name="email" placeholder="ایمیل خود را وارد کنید" required>
+                </div>
+                <div class="form-group-lamp">
+                    <label for="id_password1">رمز عبور</label>
+                    <input type="password" id="id_password1" name="password1" placeholder="رمز عبور قوی انتخاب کنید" required>
+                    <div class="form-help-lamp">حداقل ۸ کاراکتر</div>
+                </div>
+                <div class="form-group-lamp">
+                    <label for="id_password2">تایید رمز عبور</label>
+                    <input type="password" id="id_password2" name="password2" placeholder="رمز عبور را دوباره وارد کنید" required>
+                </div>
+                <button type="submit" class="login-btn-lamp">ثبت نام</button>
+            </form>
+
+            <div class="lamp-footer">
+                <p>قبلاً ثبت نام کرده‌اید؟</p>
+                <a href="{% url 'accounts:login' %}">ورود کنید</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const cord = document.getElementById('pullCord');
+    const page = document.getElementById('lampPage');
+    let isLit = false;
+
+    cord.addEventListener('click', function() {
+        cord.classList.remove('pulled');
+        void cord.offsetWidth;
+        cord.classList.add('pulled');
+
+        isLit = !isLit;
+        setTimeout(() => {
+            page.classList.toggle('lit', isLit);
+        }, 150);
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,237 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+
+<style>
+    .gateway-container { max-width: 600px; margin: 80px auto; padding: 40px 20px; }
+    
+    .gateway-box {
+        background: white;
+        padding: 50px;
+        border-radius: 15px;
+        border: 2px solid #d4af37;
+        box-shadow: 0 20px 60px rgba(212, 175, 55, 0.15);
+        text-align: center;
+        animation: slideUp 0.6s ease;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .gateway-icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+    }
+
+    .gateway-title {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #0f0f0f;
+        margin-bottom: 10px;
+    }
+
+    .gateway-subtitle {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 40px;
+    }
+
+    .amount-display {
+        background: linear-gradient(135deg, #d4af37 0%, #e6c200 100%);
+        color: #0f0f0f;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        font-size: 1.4rem;
+        font-weight: 900;
+    }
+
+    .payment-steps {
+        background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 100%);
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .step {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .step:last-child {
+        margin-bottom: 0;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: #d4af37;
+        color: #0f0f0f;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 1.2rem;
+    }
+
+    .payment-form {
+        background: linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%);
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        border: 2px solid #e0e0e0;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 900;
+        color: #0f0f0f;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #d4af37;
+        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+    }
+
+    .payment-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .btn {
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+
+    .btn-pay {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        color: white;
+        box-shadow: 0 8px 24px rgba(39, 174, 96, 0.3);
+    }
+
+    .btn-pay:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(39, 174, 96, 0.4);
+    }
+
+    .btn-cancel {
+        background: #e0e0e0;
+        color: #0f0f0f;
+    }
+
+    .btn-cancel:hover {
+        background: #d0d0d0;
+    }
+
+    .security-badge {
+        background: linear-gradient(135deg, #e0ffe0 0%, #c8f5c8 100%);
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #a8eba8;
+        color: #27ae60;
+        font-weight: 700;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .payment-buttons { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="gateway-container">
+    <div class="gateway-box">
+        <div class="gateway-icon">🔒</div>
+        <h1 class="gateway-title">درگاه پرداخت</h1>
+        <p class="gateway-subtitle">اطلاعات کارت خود را وارد کنید</p>
+
+        <div class="amount-display">
+            </div>
+
+        <div class="payment-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <span>اطلاعات کارت را وارد کنید</span>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <span>کد تأیید را تایید کنید</span>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <span>پرداخت تکمیل می‌شود</span>
+            </div>
+        </div>
+
+        <form method="POST" action="{% url 'payment:payment_verify' %}" class="payment-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">شماره کارت</label>
+                <input type="text" name="card_number" class="form-input" placeholder="۱۶ رقم" maxlength="16" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">نام دارندهٔ کارت</label>
+                <input type="text" name="card_holder" class="form-input" placeholder="نام کامل" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label class="form-label">ماه/سال</label>
+                    <input type="text" name="expiry" class="form-input" placeholder="MM/YY" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">CVV</label>
+                    <input type="text" name="cvv" class="form-input" placeholder="۳ رقم" maxlength="3" required>
+                </div>
+            </div>
+
+            <input type="hidden" name="Authority" value="{{ authority }}">
+            <input type="hidden" name="Status" value="OK">
+
+            <div class="payment-buttons">
+                <button type="submit" class="btn btn-pay">✓ تأیید و پرداخت</button>
+                <a href="{% url 'cart:view_cart' %}" class="btn btn-cancel">✕ انصراف</a>
+            </div>
+        </form>
+
+        <div class="security-badge">
+            🔒 اطلاعات شما ایمن است
+        </div>
+    </div>
+</div>
+
+{% endblock %}

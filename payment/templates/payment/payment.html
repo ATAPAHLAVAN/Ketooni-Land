@@ -1,0 +1,105 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}پرداخت - کتونی لند{% endblock %}
+{% block content %}
+<style>
+    @keyframes gradientShift { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-20px);} }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+
+    .payment-container {
+        min-height: calc(100vh - 200px);
+        display: flex; align-items: center; justify-content: center; padding: 40px;
+        background: linear-gradient(-45deg, #0a0e14, #1a202c, #2c1a3d, #1a202c);
+        background-size: 300% 300%; animation: gradientShift 12s ease infinite;
+        position: relative; overflow: hidden;
+    }
+    .payment-container::before {
+        content:''; position:absolute; width:500px; height:500px; border-radius:50%;
+        background: radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%);
+        top:-150px; right:-150px; animation: float 8s ease-in-out infinite;
+    }
+    .payment-container::after {
+        content:''; position:absolute; width:400px; height:400px; border-radius:50%;
+        background: radial-gradient(circle, rgba(255,184,0,0.15) 0%, transparent 70%);
+        bottom:-150px; left:-150px; animation: float 10s ease-in-out infinite reverse;
+    }
+
+    .payment-card {
+        background: rgba(255,255,255,0.97); backdrop-filter: blur(20px);
+        border-radius: 20px; box-shadow: 0 25px 70px rgba(139,92,246,0.3);
+        padding: 45px; width: 100%; max-width: 450px; position: relative; z-index: 2;
+        border: 1px solid rgba(139,92,246,0.2); animation: fadeInUp 0.7s ease;
+    }
+
+    .payment-icon {
+        width: 70px; height: 70px; margin: 0 auto 20px;
+        background: linear-gradient(135deg, #8B5CF6, #FFB800); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; font-size: 2rem;
+        box-shadow: 0 10px 30px rgba(139,92,246,0.3);
+    }
+
+    .payment-header { text-align: center; margin-bottom: 30px; }
+    .payment-header h1 { font-size: 1.7rem; font-weight: 950; color: #1a202c; margin-bottom: 8px; }
+    .payment-header h1 span { background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .payment-header p { color: #718096; font-size: 0.9rem; }
+
+    .order-summary-box { background: #f7fafc; border-radius: 14px; padding: 22px; margin-bottom: 25px; border: 1px solid #e2e8f0; }
+    .summary-line { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.9rem; color: #4a5568; }
+    .summary-line.total {
+        border-top: 2px solid #e2e8f0; margin-top: 8px; padding-top: 14px; font-size: 1.2rem; font-weight: 950;
+    }
+    .summary-line.total span:last-child {
+        background: linear-gradient(135deg, #8B5CF6, #FFB800); -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .pay-button {
+        width: 100%; padding: 16px; background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        color: white; border: none; border-radius: 14px; font-weight: 950; font-size: 1.05rem;
+        cursor: pointer; transition: all 0.4s ease; text-decoration: none; display: block; text-align: center;
+        position: relative; overflow: hidden;
+    }
+    .pay-button::before {
+        content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+        transition: left 0.5s ease;
+    }
+    .pay-button:hover::before { left: 100%; }
+    .pay-button:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(139,92,246,0.4); color: white; }
+
+    .secure-badge {
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        margin-top: 20px; color: #718096; font-size: 0.8rem;
+    }
+    .zarinpal-logo {
+        display: block; text-align: center; margin-top: 20px; color: #a0aec0; font-size: 0.75rem;
+    }
+
+    @media (max-width: 480px) { .payment-card { padding: 30px 24px; } }
+</style>
+
+<div class="payment-container">
+    <div class="payment-card">
+        <div class="payment-icon">💳</div>
+        <div class="payment-header">
+            <h1>پرداخت <span>سفارش</span></h1>
+            <p>سفارش شماره #{{ order.id }}</p>
+        </div>
+
+        <div class="order-summary-box">
+            <div class="summary-line"><span>نام مشتری:</span><span>{{ order.customer_name }}</span></div>
+            <div class="summary-line"><span>تعداد اقلام:</span><span>{{ order.items.count }}</span></div>
+            <div class="summary-line total"><span>مبلغ قابل پرداخت:</span><span>{{ amount|floatformat:0 }} تومان</span></div>
+        </div>
+
+        <a href="{% url 'payment:gateway' payment.id %}" class="pay-button">
+            پرداخت امن با درگاه بانکی
+        </a>
+
+        <div class="secure-badge">🔒 اتصال امن و رمزنگاری‌شده</div>
+        <div class="zarinpal-logo">پرداخت از طریق درگاه زرین‌پال</div>
+    </div>
+</div>
+{% endblock %}

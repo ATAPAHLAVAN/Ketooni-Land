@@ -1,0 +1,261 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}افزودن آدرس - کتونی لند{% endblock %}
+
+{% block content %}
+
+<style>
+    .add-address-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        background: linear-gradient(135deg, #f7fafc 0%, white 100%);
+    }
+
+    .add-address-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 217, 255, 0.15);
+        padding: 50px;
+        width: 100%;
+        max-width: 600px;
+        border: 2px solid transparent;
+    }
+
+    .add-address-card:hover {
+        border: 2px solid #00D9FF;
+    }
+
+    .add-address-header {
+        margin-bottom: 35px;
+    }
+
+    .add-address-header h1 {
+        font-size: 2.2rem;
+        font-weight: 950;
+        color: #1a202c;
+        margin-bottom: 8px;
+    }
+
+    .add-address-header h1 span {
+        color: #00D9FF;
+    }
+
+    .add-address-header p {
+        color: #718096;
+        font-size: 0.95rem;
+    }
+
+    .form-group-pro {
+        margin-bottom: 20px;
+    }
+
+    .form-group-pro label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 900;
+        color: #1a202c;
+        font-size: 0.95rem;
+    }
+
+    .form-group-pro input,
+    .form-group-pro textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: #f7fafc;
+        font-family: inherit;
+    }
+
+    .form-group-pro input:focus,
+    .form-group-pro textarea:focus {
+        outline: none;
+        border-color: #00D9FF;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+    }
+
+    .form-group-pro textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-row .form-group-pro {
+        margin-bottom: 0;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 25px 0;
+        padding: 15px;
+        background: #f7fafc;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+    }
+
+    .checkbox-group input {
+        width: auto;
+        cursor: pointer;
+    }
+
+    .checkbox-group label {
+        margin: 0;
+        cursor: pointer;
+        font-weight: 700;
+    }
+
+    .form-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .submit-btn {
+        flex: 1;
+        padding: 14px;
+        background: linear-gradient(135deg, #00D9FF 0%, #1DD1A1 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 950;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 217, 255, 0.3);
+    }
+
+    .cancel-btn {
+        flex: 1;
+        padding: 14px;
+        background: white;
+        color: #00D9FF;
+        border: 2px solid #00D9FF;
+        border-radius: 8px;
+        font-weight: 950;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .cancel-btn:hover {
+        background: #f7fafc;
+    }
+
+    @media (max-width: 480px) {
+        .add-address-card { padding: 30px; }
+        .add-address-header h1 { font-size: 1.8rem; }
+        .form-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="add-address-container">
+    <div class="add-address-card">
+        <div class="add-address-header">
+            <h1>افزودن آدرس <span>جدید</span></h1>
+            <p>یک آدرس جدید به حساب خود اضافه کنید</p>
+        </div>
+
+        <form method="POST" class="form-pro">
+            {% csrf_token %}
+
+            <div class="form-group-pro">
+                <label>عنوان آدرس</label>
+                <input 
+                    type="text" 
+                    name="title" 
+                    placeholder="مثال: خانه، محل کار"
+                    required
+                >
+            </div>
+
+            <div class="form-group-pro">
+                <label>نام و نام خانوادگی</label>
+                <input 
+                    type="text" 
+                    name="full_name" 
+                    placeholder="نام کامل خود را وارد کنید"
+                    required
+                >
+            </div>
+
+            <div class="form-group-pro">
+                <label>شماره تلفن</label>
+                <input 
+                    type="tel" 
+                    name="phone" 
+                    placeholder="09120000000"
+                    required
+                >
+            </div>
+
+            <div class="form-row">
+                <div class="form-group-pro">
+                    <label>شهر</label>
+                    <input 
+                        type="text" 
+                        name="city" 
+                        placeholder="شهر"
+                        required
+                    >
+                </div>
+
+                <div class="form-group-pro">
+                    <label>کد پستی</label>
+                    <input 
+                        type="text" 
+                        name="postal_code" 
+                        placeholder="کد پستی"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="form-group-pro">
+                <label>آدرس کامل</label>
+                <textarea 
+                    name="address" 
+                    placeholder="آدرس کامل را وارد کنید"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="is_default" name="is_default">
+                <label for="is_default">این آدرس را به عنوان پیش‌فرض تعیین کن</label>
+            </div>
+
+            <div class="form-buttons">
+                <button type="submit" class="submit-btn">
+                    ذخیره آدرس
+                </button>
+                <a href="{% url 'userprofile:addresses' %}" class="cancel-btn">
+                    انصراف
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

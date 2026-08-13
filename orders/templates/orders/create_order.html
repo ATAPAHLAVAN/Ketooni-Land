@@ -1,0 +1,133 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}تکمیل خرید - کتونی لند{% endblock %}
+{% block content %}
+<style>
+    @keyframes gradientShift { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(25px);} to{opacity:1;transform:translateY(0);} }
+
+    .checkout-header {
+        background: linear-gradient(-45deg, #0a0e14, #1a202c, #2c1a3d, #1a202c);
+        background-size: 300% 300%; animation: gradientShift 10s ease infinite;
+        color: white; padding: 55px 40px; text-align: center; position: relative;
+    }
+    .checkout-header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+        background: linear-gradient(90deg, transparent, #8B5CF6, #FFB800, #8B5CF6, transparent); }
+    .checkout-header h1 { font-size: 2.5rem; font-weight: 900; }
+    .checkout-header p { color: rgba(255,255,255,0.65); margin-top: 8px; }
+
+    .checkout-container { padding: 55px 40px; max-width: 1300px; margin: 0 auto; }
+    .checkout-grid { display: grid; grid-template-columns: 1fr 380px; gap: 40px; }
+
+    .checkout-form-section {
+        background: white; border-radius: 18px; padding: 35px; border: 2px solid #e2e8f0;
+        animation: fadeInUp 0.6s ease;
+    }
+    .checkout-form-title {
+        font-size: 1.5rem; font-weight: 950; color: #1a202c; margin-bottom: 25px;
+        padding-bottom: 15px; border-bottom: 2px solid #8B5CF6;
+    }
+    .checkout-form-title span { background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .form-group-pro { margin-bottom: 20px; }
+    .form-group-pro label { display: block; margin-bottom: 8px; font-weight: 900; color: #1a202c; font-size: 0.95rem; }
+    .form-group-pro input, .form-group-pro textarea {
+        width: 100%; padding: 13px 16px; border: 2px solid #e2e8f0; border-radius: 12px;
+        font-size: 0.95rem; transition: all .3s ease; background: #f7fafc; font-family: inherit;
+    }
+    .form-group-pro input:focus, .form-group-pro textarea:focus {
+        outline: none; border-color: #8B5CF6; background: white; box-shadow: 0 0 0 4px rgba(139,92,246,0.12);
+    }
+    .form-group-pro textarea { resize: vertical; min-height: 100px; }
+
+    .checkout-submit-btn {
+        width: 100%; padding: 16px; background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        color: white; border: none; border-radius: 12px; font-weight: 950; font-size: 1.05rem;
+        cursor: pointer; transition: all .4s ease; margin-top: 15px; position: relative; overflow: hidden;
+    }
+    .checkout-submit-btn::before {
+        content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent); transition: left 0.5s ease;
+    }
+    .checkout-submit-btn:hover::before { left: 100%; }
+    .checkout-submit-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(139,92,246,0.4); }
+
+    .order-summary {
+        background: linear-gradient(135deg, #f7fafc, white); border-radius: 18px; padding: 30px;
+        border: 2px solid #e2e8f0; height: fit-content; position: sticky; top: 100px;
+        animation: fadeInUp 0.6s ease 0.1s both;
+    }
+    .order-summary-title {
+        font-size: 1.3rem; font-weight: 950; color: #1a202c; margin-bottom: 20px;
+        padding-bottom: 15px; border-bottom: 2px solid #8B5CF6;
+    }
+    .order-item {
+        display: flex; justify-content: space-between; align-items: center; gap: 12px;
+        margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem;
+    }
+    .order-item-name { font-weight: 800; color: #1a202c; }
+    .order-item-meta { color: #718096; font-size: 0.8rem; }
+    .order-item-price { font-weight: 900; color: #8B5CF6; white-space: nowrap; }
+
+    .order-total-row {
+        display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: 950;
+        margin-top: 20px; padding-top: 20px; border-top: 2px solid #e2e8f0;
+    }
+    .order-total-row span:last-child {
+        background: linear-gradient(135deg, #8B5CF6, #FFB800); -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    @media (max-width: 768px) {
+        .checkout-grid { grid-template-columns: 1fr; }
+        .order-summary { position: static; }
+    }
+</style>
+
+<div class="checkout-header">
+    <h1>تکمیل فرآیند خرید</h1>
+    <p>اطلاعات خودتان را برای ثبت سفارش وارد کنید</p>
+</div>
+
+<div class="checkout-container">
+    <div class="checkout-grid">
+        <div class="checkout-form-section">
+            <h2 class="checkout-form-title">اطلاعات <span>ارسال</span></h2>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group-pro">
+                    <label>نام و نام خانوادگی</label>
+                    <input type="text" name="customer_name" placeholder="نام کامل خود را وارد کنید" required>
+                </div>
+                <div class="form-group-pro">
+                    <label>شماره تلفن</label>
+                    <input type="tel" name="phone" placeholder="09120000000" required>
+                </div>
+                <div class="form-group-pro">
+                    <label>آدرس کامل</label>
+                    <textarea name="address" placeholder="آدرس کامل تحویل سفارش را وارد کنید" required></textarea>
+                </div>
+                <button type="submit" class="checkout-submit-btn">ثبت نهایی سفارش</button>
+            </form>
+        </div>
+
+        <div class="order-summary">
+            <h3 class="order-summary-title">خلاصهٔ سفارش</h3>
+            {% for item in items %}
+            <div class="order-item">
+                <div>
+                    <div class="order-item-name">{{ item.product.name }}</div>
+                    <div class="order-item-meta">{% if item.size %}سایز {{ item.size }} · {% endif %}{{ item.quantity }} عدد</div>
+                </div>
+                <div class="order-item-price">{{ item.get_total|floatformat:0 }}</div>
+            </div>
+            {% endfor %}
+            <div class="order-total-row">
+                <span>جمع کل:</span>
+                <span>{{ cart_total|floatformat:0 }} تومان</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

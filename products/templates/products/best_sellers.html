@@ -1,0 +1,319 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+
+<style>
+    .bestsellers-header {
+        background: linear-gradient(135deg, #1a1a1a 0%, #3d3d3d 100%);
+        color: white;
+        padding: 60px 20px;
+        border-radius: 20px;
+        margin-bottom: 50px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        animation: fadeInDown 0.8s ease;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .bestsellers-header h1 {
+        font-size: 3rem;
+        font-weight: 900;
+        margin: 0;
+    }
+
+    .bestsellers-header p {
+        font-size: 1.2rem;
+        margin-top: 10px;
+        opacity: 0.9;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        margin-bottom: 60px;
+    }
+
+    .bestsellers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .bestseller-card {
+        background: white;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+        border: 2px solid transparent;
+        animation: fadeInUp 0.6s ease;
+        animation-fill-mode: both;
+        position: relative;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .bestseller-card:nth-child(1) { animation-delay: 0.05s; }
+    .bestseller-card:nth-child(2) { animation-delay: 0.1s; }
+    .bestseller-card:nth-child(3) { animation-delay: 0.15s; }
+    .bestseller-card:nth-child(4) { animation-delay: 0.2s; }
+    .bestseller-card:nth-child(5) { animation-delay: 0.25s; }
+    .bestseller-card:nth-child(6) { animation-delay: 0.3s; }
+
+    .bestseller-card:hover {
+        transform: translateY(-18px);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+        border-color: #1a1a1a;
+    }
+
+    .rank-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        color: #1a1a1a;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 1.3rem;
+        box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+        z-index: 10;
+    }
+
+    .product-image {
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        height: 240px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 100px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-image::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translate(-100%, -100%) rotate(45deg); }
+        100% { transform: translate(100%, 100%) rotate(45deg); }
+    }
+
+    .product-info {
+        padding: 28px;
+    }
+
+    .product-title {
+        font-weight: 900;
+        font-size: 1.2rem;
+        margin: 0 0 12px 0;
+        color: #1a1a1a;
+        line-height: 1.4;
+    }
+
+    .product-brand {
+        color: #999;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .product-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        margin-bottom: 12px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-icon {
+        font-size: 1.2rem;
+    }
+
+    .stat-value {
+        font-weight: 700;
+        color: #1a1a1a;
+        font-size: 0.95rem;
+    }
+
+    .product-price {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: #1a1a1a;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .price-original {
+        font-size: 0.85rem;
+        color: #999;
+        text-decoration: line-through;
+        font-weight: 600;
+    }
+
+    .product-btn {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 12px;
+        width: 100%;
+        font-weight: 900;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+        margin-bottom: 10px;
+    }
+
+    .product-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4);
+    }
+
+    .wishlist-btn {
+        background: white;
+        color: #e74c3c;
+        border: 2px solid #e74c3c;
+        padding: 12px;
+        border-radius: 12px;
+        width: 100%;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .wishlist-btn:hover {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .badge-bestseller {
+        display: inline-block;
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+    }
+
+    @media (max-width: 1024px) {
+        .bestsellers-grid {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .bestsellers-header h1 {
+            font-size: 2rem;
+        }
+
+        .bestsellers-grid {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .product-image {
+            height: 180px;
+            font-size: 70px;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="bestsellers-header">
+    <h1>🏆 پر‌فروش‌ترین کفش‌ها</h1>
+    <p>محبوب‌ترین و بیشتر فروش شده کفش‌های ما</p>
+</div>
+
+<div class="container">
+    <div class="bestsellers-grid">
+        {% for product in products %}
+        <div class="bestseller-card">
+            <div class="rank-badge">{{ forloop.counter }}</div>
+            <div class="product-image">👟</div>
+            <div class="product-info">
+                <div class="badge-bestseller">⭐ پر‌فروش</div>
+                <div class="product-brand">{{ product.get_brand_display }}</div>
+                <h3 class="product-title">{{ product.name }}</h3>
+                
+                <div class="product-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-value">{{ product.rating }}/5</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">💬</div>
+                        <div class="stat-value">{{ product.reviews_count }}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-value">{{ product.quantity }}</div>
+                    </div>
+                </div>
+
+                <div class="product-price">
+                    {{ product.get_discount_price|floatformat:0 }} تومان
+                    {% if product.discount_percent %}
+                    <span class="price-original">{{ product.price|floatformat:0 }}</span>
+                    {% endif %}
+                </div>
+
+                <a href="{% url 'products:product_detail' product.slug %}" class="product-btn">
+                    🛒 خرید الان
+                 </a>
+                <button class="wishlist-btn">❤️ علاقه‌مندی</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

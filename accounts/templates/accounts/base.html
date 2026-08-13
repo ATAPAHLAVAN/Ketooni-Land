@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}فروشگاه کتاب کتونی{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Navbar */
+        .navbar { background: linear-gradient(90deg, #2c3e50 0%, #3498db 100%); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+        .navbar-brand { font-size: 1.8rem; font-weight: bold; color: white !important; }
+        .nav-link { color: white !important; margin: 0 10px; font-weight: 500; }
+        .nav-link:hover { color: #ffd700 !important; }
+        
+        /* Hero Section */
+        .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 20px; text-align: center; }
+        .hero h1 { font-size: 3rem; font-weight: bold; margin-bottom: 20px; }
+        .hero p { font-size: 1.3rem; margin-bottom: 30px; }
+        .hero-btn { background: white; color: #667eea; font-weight: bold; padding: 12px 30px; border-radius: 25px; text-decoration: none; display: inline-block; transition: all 0.3s ease; }
+        .hero-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); }
+        
+        /* Books Grid */
+        .books-section { padding: 50px 20px; }
+        .section-title { text-align: center; font-size: 2rem; font-weight: bold; margin-bottom: 40px; color: #2c3e50; }
+        
+        .book-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; height: 100%; }
+        .book-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); }
+        
+        .book-image { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 250px; display: flex; align-items: center; justify-content: center; font-size: 60px; }
+        .book-info { padding: 20px; }
+        .book-title { font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; color: #2c3e50; }
+        .book-author { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 10px; }
+        .book-price { font-size: 1.5rem; color: #e74c3c; font-weight: bold; margin-bottom: 15px; }
+        .book-btn { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; transition: all 0.3s ease; width: 100%; }
+        .book-btn:hover { background: #764ba2; }
+        
+        /* Cart */
+        .cart-icon { position: relative; margin-left: 20px; }
+        .cart-count { position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; }
+        
+        /* Footer */
+        footer { background: linear-gradient(90deg, #2c3e50 0%, #3498db 100%); color: white; text-align: center; padding: 30px; margin-top: 50px; }
+        
+        /* Messages */
+        .alert { border-radius: 10px; border: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+        
+        main { padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/">📚 کتونی</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">🏠 خانه</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Ketooni/">📖 کتونی ها</a>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/cart/">
+                                <i class="fas fa-shopping-cart"></i> سبد
+                                <span class="cart-count">3</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link">👤 {{ user.username }}</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-danger btn-sm text-white" href="{% url 'accounts:logout' %}">خروج</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-info btn-sm text-white" href="{% url 'accounts:login' %}">🔐 ورود</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-success btn-sm text-white" href="{% url 'accounts:register' %}">📝 ثبت‌نام</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p class="mb-1">© 2025 فروشگاه کتاب کتونی</p>
+        <small>بهترین کتاب‌ها با بهترین قیمت ❤️</small>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

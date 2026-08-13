@@ -1,0 +1,54 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}پرداخت ناموفق - کتونی لند{% endblock %}
+{% block content %}
+<style>
+    @keyframes scaleIn { from { opacity:0; transform: scale(0.7); } to { opacity:1; transform: scale(1); } }
+    @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+
+    .result-container {
+        min-height: calc(100vh - 200px); display: flex; align-items: center; justify-content: center;
+        padding: 40px; background: linear-gradient(135deg, #fff5f5 0%, white 100%);
+    }
+    .result-card {
+        background: white; border-radius: 20px; padding: 50px; max-width: 480px; width: 100%;
+        text-align: center; box-shadow: 0 25px 70px rgba(229,62,62,0.15); border: 2px solid rgba(229,62,62,0.2);
+        animation: fadeInUp 0.6s ease;
+    }
+    .failed-icon-circle {
+        width: 100px; height: 100px; margin: 0 auto 25px; border-radius: 50%;
+        background: linear-gradient(135deg, #f56565, #c53030); display: flex; align-items: center; justify-content: center;
+        font-size: 3rem; color: white; animation: scaleIn 0.5s ease, shake 0.5s ease 0.5s;
+        box-shadow: 0 15px 40px rgba(229,62,62,0.3);
+    }
+
+    .result-card h1 { font-size: 1.8rem; font-weight: 950; color: #1a202c; margin-bottom: 10px; }
+    .result-card p { color: #718096; margin-bottom: 25px; line-height: 1.7; }
+
+    .btn-group { display: flex; gap: 12px; }
+    .btn-result {
+        flex: 1; padding: 14px; border-radius: 12px; font-weight: 900; text-decoration: none;
+        transition: all .3s ease; font-size: 0.9rem; cursor: pointer; border: none;
+    }
+    .btn-primary-result { background: linear-gradient(135deg, #8B5CF6, #FFB800); color: white; }
+    .btn-primary-result:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(139,92,246,0.35); color: white; }
+    .btn-secondary-result { background: white; color: #718096; border: 2px solid #e2e8f0; }
+    .btn-secondary-result:hover { border-color: #8B5CF6; color: #8B5CF6; }
+</style>
+
+<div class="result-container">
+    <div class="result-card">
+        <div class="failed-icon-circle">✕</div>
+        <h1>پرداخت ناموفق</h1>
+        <p>{{ message|default:"متاسفانه پرداخت شما با مشکل مواجه شد." }}</p>
+
+        <div class="btn-group">
+            {% if payment %}
+            <a href="{% url 'payment:payment_page' payment.order.id %}" class="btn-result btn-primary-result">تلاش مجدد</a>
+            {% endif %}
+            <a href="{% url 'shop:index' %}" class="btn-result btn-secondary-result">صفحهٔ اصلی</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

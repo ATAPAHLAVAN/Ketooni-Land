@@ -1,0 +1,401 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}{{ product.name }} - کتونی لند{% endblock %}
+{% block content %}
+<style>
+    @keyframes gradientShift { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+    @keyframes slideIn { from { transform: translateX(500px); opacity:0; } to { transform: translateX(0); opacity:1; } }
+
+    .breadcrumb-pro {
+        background: linear-gradient(-45deg, #0a0e14, #1a202c, #2c1a3d, #1a202c);
+        background-size: 300% 300%; animation: gradientShift 10s ease infinite;
+        padding: 22px 40px; color: white; position: relative;
+    }
+    .breadcrumb-pro::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+        background: linear-gradient(90deg, transparent, #8B5CF6, #FFB800, #8B5CF6, transparent); }
+    .breadcrumb-pro a { color: #FFB800; text-decoration: none; margin: 0 8px; transition: all .3s; }
+    .breadcrumb-pro a:hover { color: #8B5CF6; }
+
+    .product-detail-container { padding: 55px 40px; max-width: 1400px; margin: 0 auto; }
+    .product-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: start; }
+
+    /* IMAGE + ZOOM */
+    .product-image-large {
+        height: 520px; background: linear-gradient(135deg, #1a202c, #2c1a3d);
+        border-radius: 16px; display: flex; align-items: center; justify-content: center;
+        font-size: 6rem; overflow: hidden; box-shadow: 0 15px 50px rgba(139, 92, 246, 0.2);
+        position: relative; cursor: zoom-in;
+    }
+    .product-image-large img { width: 100%; height: 100%; object-fit: cover; }
+    .zoom-lens {
+        position: absolute;
+        border: 3px solid #8B5CF6;
+        border-radius: 8px;
+        width: 150px;
+        height: 150px;
+        background-repeat: no-repeat;
+        pointer-events: none;
+        display: none;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        z-index: 5;
+    }
+    .zoom-hint {
+        position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+        background: rgba(0,0,0,0.6); color: white; padding: 6px 16px; border-radius: 20px;
+        font-size: 0.75rem; font-weight: 700; backdrop-filter: blur(6px); pointer-events: none;
+        opacity: 0.85;
+    }
+
+    .product-details-pro { padding: 32px; background: white; border-radius: 16px; border: 1px solid #e2e8f0; }
+    .product-category-pro { color: #8B5CF6; font-size: 0.9rem; font-weight: 900; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .product-name-pro { font-size: 2.1rem; font-weight: 950; color: #1a202c; margin-bottom: 10px; }
+
+    .rating-line { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+    .rating-line .stars { color: #FFB800; font-size: 1.1rem; }
+    .rating-line .count { color: #718096; font-size: 0.85rem; }
+
+    .product-price-pro { font-size: 1.9rem; font-weight: 900; background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 22px; }
+
+    .product-desc-pro { color: #718096; line-height: 1.8; margin-bottom: 25px; padding: 20px;
+        background: #f7fafc; border-radius: 10px; border-right: 4px solid #8B5CF6; }
+
+    .sizes-section { margin-bottom: 25px; }
+    .sizes-label { font-weight: 900; color: #1a202c; display: block; margin-bottom: 12px; font-size: 0.95rem; }
+    .sizes-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+    .size-btn { padding: 12px; border: 2px solid #e2e8f0; background: white; color: #1a202c; border-radius: 10px;
+        cursor: pointer; font-weight: 900; transition: all .3s; text-align: center; }
+    .size-btn:hover { border-color: #8B5CF6; color: #8B5CF6; }
+    .size-btn.active { background: linear-gradient(135deg, #8B5CF6, #FFB800); color: white; border-color: #8B5CF6; }
+    .size-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .product-info-box { background: #f7fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+    .product-info-box label { font-weight: 900; color: #1a202c; display: block; margin-bottom: 8px; font-size: 0.95rem; }
+    .in-stock { color: #1DD1A1; font-weight: 900; }
+    .out-of-stock { color: #e53e3e; font-weight: 900; }
+
+    .quantity-section { margin-bottom: 25px; }
+    .quantity-label { font-weight: 900; color: #1a202c; display: block; margin-bottom: 10px; }
+    .quantity-input { display: flex; align-items: center; gap: 10px; width: fit-content; }
+    .quantity-btn { width: 42px; height: 42px; border: 2px solid #e2e8f0; background: white; color: #1a202c;
+        border-radius: 8px; cursor: pointer; font-weight: 900; transition: all .3s; }
+    .quantity-btn:hover { border-color: #8B5CF6; color: #8B5CF6; }
+    #quantity { width: 60px; text-align: center; border: 2px solid #e2e8f0; padding: 8px; border-radius: 8px; font-weight: 900; }
+
+    .product-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+    .btn-add-cart-pro { padding: 15px; background: linear-gradient(135deg, #8B5CF6, #FFB800); color: white;
+        border: none; border-radius: 10px; font-weight: 900; cursor: pointer; transition: all .35s; font-size: 1rem; }
+    .btn-add-cart-pro:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(139, 92, 246, 0.4); }
+    .btn-wishlist-pro { padding: 15px; background: white; color: #8B5CF6; border: 2px solid #8B5CF6;
+        border-radius: 10px; font-weight: 900; cursor: pointer; transition: all .3s; font-size: 1rem; }
+    .btn-wishlist-pro:hover { background: #f7fafc; }
+    .btn-wishlist-pro.wishlisted { background: linear-gradient(135deg, #8B5CF6, #FFB800); color: white; }
+
+    .unavailable-msg { padding: 15px; background: #fed7d7; color: #c53030; border-radius: 10px; text-align: center; font-weight: 900; }
+
+    .toast-message { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        color: white; padding: 15px 25px; border-radius: 10px; font-weight: 900; box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        animation: slideIn 0.3s ease; z-index: 1000; }
+
+    /* RELATED PRODUCTS */
+    .related-section { padding: 60px 40px; max-width: 1400px; margin: 0 auto; }
+    .related-title { font-size: 1.8rem; font-weight: 900; color: #1a202c; margin-bottom: 30px; }
+    .related-title span { background: linear-gradient(135deg, #8B5CF6, #FFB800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    .related-card { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all .35s ease; text-decoration: none; display: block; }
+    .related-card:hover { transform: translateY(-8px); box-shadow: 0 18px 40px rgba(139,92,246,0.25); }
+    .related-img { height: 160px; background: linear-gradient(135deg,#1a202c,#2c1a3d); display:flex; align-items:center; justify-content:center; font-size:2.5rem; overflow:hidden; }
+    .related-img img { width:100%; height:100%; object-fit:cover; }
+    .related-info { padding: 14px; }
+    .related-name { font-size: 0.95rem; font-weight: 800; color: #1a202c; margin-bottom: 6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .related-price { color: #8B5CF6; font-weight: 900; font-size: 0.95rem; }
+
+    /* REVIEWS */
+    .reviews-section { padding: 60px 40px; max-width: 1400px; margin: 0 auto; }
+    .reviews-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
+    .reviews-title { font-size: 1.8rem; font-weight: 900; color: #1a202c; }
+    .reviews-title span { background: linear-gradient(135deg, #8B5CF6, #FFB800); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .rating-summary { display: flex; align-items: center; gap: 10px; background: #f7fafc; padding: 12px 20px; border-radius: 12px; }
+    .rating-stars { color: #FFB800; font-size: 1.2rem; }
+    .rating-number { font-weight: 900; color: #1a202c; }
+
+    .review-form-box { background: white; border-radius: 16px; padding: 30px; border: 2px solid #e2e8f0; margin-bottom: 30px; }
+    .star-rating-input { display: flex; gap: 8px; margin-bottom: 15px; direction: ltr; justify-content: flex-end; }
+    .star-rating-input input { display: none; }
+    .star-rating-input label { font-size: 1.8rem; color: #d1d5db; cursor: pointer; transition: color .2s; }
+    .star-rating-input input:checked ~ label,
+    .star-rating-input label:hover,
+    .star-rating-input label:hover ~ label { color: #FFB800; }
+    .review-textarea { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px; min-height: 100px; font-family: inherit; margin-bottom: 15px; }
+    .review-textarea:focus { outline: none; border-color: #8B5CF6; }
+    .review-submit-btn { padding: 12px 30px; background: linear-gradient(135deg, #8B5CF6, #FFB800); color: white; border: none; border-radius: 10px; font-weight: 900; cursor: pointer; }
+
+    .review-card { background: white; border-radius: 14px; padding: 22px; border: 1px solid #e2e8f0; margin-bottom: 18px; }
+    .review-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .review-user { font-weight: 900; color: #1a202c; }
+    .review-stars { color: #FFB800; }
+    .review-comment { color: #4a5568; line-height: 1.7; margin-bottom: 12px; }
+    .review-actions { display: flex; gap: 15px; align-items: center; }
+    .review-vote-btn { background: none; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 14px; cursor: pointer; font-size: 0.85rem; color: #718096; transition: all .2s; }
+    .review-vote-btn:hover { border-color: #8B5CF6; color: #8B5CF6; }
+    .admin-reply-box { background: #f7fafc; border-right: 3px solid #8B5CF6; padding: 12px 15px; border-radius: 8px; margin-top: 12px; font-size: 0.9rem; }
+    .no-reviews { text-align: center; padding: 40px; color: #718096; }
+
+    @media (max-width: 768px) {
+        .product-detail-grid { grid-template-columns: 1fr; gap: 30px; }
+        .product-image-large { height: 350px; }
+        .product-name-pro { font-size: 1.5rem; }
+        .product-actions { grid-template-columns: 1fr; }
+        .sizes-grid { grid-template-columns: repeat(4, 1fr); }
+        .zoom-lens { display: none !important; }
+    }
+</style>
+
+<div class="breadcrumb-pro">
+    <a href="{% url 'shop:index' %}">صفحه اصلی</a><span>/</span>
+    <a href="{% url 'products:product_list' %}">محصول‌ها</a><span>/</span>
+    <span>{{ product.name }}</span>
+</div>
+
+<div class="product-detail-container">
+    <div class="product-detail-grid">
+        <div class="product-image-large" id="zoomContainer">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" id="zoomImage">
+                <div class="zoom-lens" id="zoomLens"></div>
+                <div class="zoom-hint">🔍 موس را روی عکس ببرید</div>
+            {% else %}👟{% endif %}
+        </div>
+        <div class="product-details-pro">
+            <div class="product-category-pro">{{ product.category.name }}</div>
+            <h1 class="product-name-pro">{{ product.name }}</h1>
+
+            {% if review_count > 0 %}
+            <div class="rating-line">
+                <span class="stars">
+                    {% for i in "12345" %}{% if forloop.counter <= average_rating %}★{% else %}☆{% endif %}{% endfor %}
+                </span>
+                <span class="count">{{ average_rating }} از 5 ({{ review_count }} نظر)</span>
+            </div>
+            {% endif %}
+
+            <div class="product-price-pro">
+                {% if product.discount_price %}
+                    <span style="font-size: 0.9rem; color: #999; text-decoration: line-through; -webkit-text-fill-color: #999;">{{ product.price }}</span>
+                    {{ product.discount_price }} تومان
+                {% else %}{{ product.price }} تومان{% endif %}
+            </div>
+
+            <div class="product-desc-pro">{{ product.description }}</div>
+
+            <div class="product-info-box">
+                <label>موجودی</label>
+                <p>{% if product.stock > 0 %}<span class="in-stock">✓ {{ product.stock }} عدد موجود</span>
+                {% else %}<span class="out-of-stock">✗ ناموجود</span>{% endif %}</p>
+            </div>
+
+            {% if product.sizes.exists %}
+            <div class="sizes-section">
+                <label class="sizes-label">انتخاب سایز</label>
+                <div class="sizes-grid" id="sizesGrid">
+                    {% for size_obj in product.sizes.all %}
+                    <button class="size-btn" data-size="{{ size_obj.size }}" onclick="selectSize(this)" {% if size_obj.stock == 0 %}disabled{% endif %}>{{ size_obj.size }}</button>
+                    {% endfor %}
+                </div>
+                <input type="hidden" id="selectedSize" value="">
+            </div>
+            {% endif %}
+
+            <div class="quantity-section">
+                <label class="quantity-label">تعداد</label>
+                <div class="quantity-input">
+                    <button class="quantity-btn" onclick="decreaseQuantity()">−</button>
+                    <input type="number" id="quantity" value="1" min="1" readonly>
+                    <button class="quantity-btn" onclick="increaseQuantity()">+</button>
+                </div>
+            </div>
+
+            {% if product.stock > 0 %}
+            <div class="product-actions">
+                <button class="btn-add-cart-pro" onclick="addToCart({{ product.id }})">افزودن به سبد خرید</button>
+                <button class="btn-wishlist-pro" id="wishlistBtn" onclick="addToWishlist({{ product.id }})">❤ علاقه‌مندی</button>
+            </div>
+            {% else %}
+            <div class="unavailable-msg">این محصول ناموجود است</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if related_products %}
+<div class="related-section">
+    <h2 class="related-title">محصولات <span>مشابه</span></h2>
+    <div class="related-grid">
+        {% for rp in related_products %}
+        <a href="{% url 'products:product_detail' rp.slug %}" class="related-card">
+            <div class="related-img">
+                {% if rp.image %}<img src="{{ rp.image.url }}" alt="{{ rp.name }}">{% else %}👟{% endif %}
+            </div>
+            <div class="related-info">
+                <div class="related-name">{{ rp.name }}</div>
+                <div class="related-price">{{ rp.get_price|floatformat:0 }} تومان</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+<div class="reviews-section">
+    <div class="reviews-header">
+        <h2 class="reviews-title">نظرات <span>کاربران</span></h2>
+        {% if review_count > 0 %}
+        <div class="rating-summary">
+            <span class="rating-stars">
+                {% for i in "12345" %}{% if forloop.counter <= average_rating %}★{% else %}☆{% endif %}{% endfor %}
+            </span>
+            <span class="rating-number">{{ average_rating }} از 5 ({{ review_count }} نظر)</span>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <div class="review-form-box">
+        <h3 style="font-weight:900; color:#1a202c; margin-bottom:15px;">نظر خود را ثبت کنید</h3>
+        <form method="POST" action="{% url 'reviews:add_review' product.slug %}">
+            {% csrf_token %}
+            <div class="star-rating-input">
+                <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+            </div>
+            <textarea name="comment" class="review-textarea" placeholder="نظر خود را درباره این محصول بنویسید..." required></textarea>
+            <button type="submit" class="review-submit-btn">ثبت نظر</button>
+        </form>
+    </div>
+    {% else %}
+    <p style="margin-bottom:25px;"><a href="{% url 'accounts:login' %}" style="color:#8B5CF6; font-weight:900;">وارد شوید</a> تا بتوانید نظر ثبت کنید</p>
+    {% endif %}
+
+    {% for review in reviews %}
+    <div class="review-card">
+        <div class="review-card-header">
+            <span class="review-user">{{ review.user.username }}</span>
+            <span class="review-stars">
+                {% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}
+            </span>
+        </div>
+        <p class="review-comment">{{ review.comment }}</p>
+        <div class="review-actions">
+            <button class="review-vote-btn" onclick="voteReview({{ review.id }}, true, this)">👍 <span class="like-count">{{ review.like_count }}</span></button>
+            <button class="review-vote-btn" onclick="voteReview({{ review.id }}, false, this)">👎 <span class="dislike-count">{{ review.dislike_count }}</span></button>
+        </div>
+        {% if review.admin_reply %}
+        <div class="admin-reply-box"><strong>پاسخ فروشگاه:</strong> {{ review.admin_reply }}</div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="no-reviews">هنوز نظری برای این محصول ثبت نشده. اولین نفر باشید!</div>
+    {% endfor %}
+</div>
+
+<script>
+function selectSize(btn) {
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('selectedSize').value = btn.dataset.size;
+}
+function increaseQuantity() { const q=document.getElementById('quantity'); q.value=parseInt(q.value)+1; }
+function decreaseQuantity() { const q=document.getElementById('quantity'); if(parseInt(q.value)>1) q.value=parseInt(q.value)-1; }
+function showToast(m) { const t=document.createElement('div'); t.className='toast-message'; t.textContent=m; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
+
+function addToCart(productId) {
+    const size = document.getElementById('selectedSize').value;
+    const quantity = document.getElementById('quantity').value;
+    {% if user.is_authenticated %}
+        const formData = new FormData();
+        formData.append('product_id', productId);
+        formData.append('size', size);
+        formData.append('quantity', quantity);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        fetch('{% url "cart:add_to_cart" %}', { method: 'POST', body: formData })
+        .then(r => r.json()).then(data => {
+            if (data.success) {
+                showToast(data.message);
+                document.getElementById('quantity').value = 1;
+                if (document.querySelector('.cart-badge-pro')) document.querySelector('.cart-badge-pro').textContent = data.cart_count;
+            } else { showToast('خطا: ' + data.message); }
+        });
+    {% else %} window.location.href = '{% url "accounts:login" %}'; {% endif %}
+}
+function addToWishlist(productId) {
+    {% if user.is_authenticated %}
+        const formData = new FormData();
+        formData.append('product_id', productId);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        fetch('{% url "wishlist:add_to_wishlist" %}', { method: 'POST', body: formData })
+        .then(r => r.json()).then(data => {
+            if (data.success) {
+                const btn = document.getElementById('wishlistBtn');
+                if (data.is_wishlisted) btn.classList.add('wishlisted'); else btn.classList.remove('wishlisted');
+                showToast(data.message);
+            }
+        });
+    {% else %} window.location.href = '{% url "accounts:login" %}'; {% endif %}
+}
+function voteReview(reviewId, isLike, btn) {
+    {% if user.is_authenticated %}
+    const formData = new FormData();
+    formData.append('is_like', isLike);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    fetch(`/reviews/vote/${reviewId}/`, { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const card = btn.closest('.review-card');
+                card.querySelector('.like-count').textContent = data.likes;
+                card.querySelector('.dislike-count').textContent = data.dislikes;
+            }
+        });
+    {% else %}
+    window.location.href = '{% url "accounts:login" %}';
+    {% endif %}
+}
+
+/* ===== IMAGE ZOOM EFFECT ===== */
+(function() {
+    const container = document.getElementById('zoomContainer');
+    const image = document.getElementById('zoomImage');
+    const lens = document.getElementById('zoomLens');
+    if (!container || !image || !lens) return;
+
+    container.addEventListener('mousemove', function(e) {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        let lensX = x - lens.offsetWidth / 2;
+        let lensY = y - lens.offsetHeight / 2;
+        lensX = Math.max(0, Math.min(lensX, rect.width - lens.offsetWidth));
+        lensY = Math.max(0, Math.min(lensY, rect.height - lens.offsetHeight));
+
+        lens.style.left = lensX + 'px';
+        lens.style.top = lensY + 'px';
+        lens.style.display = 'block';
+
+        const zoomFactor = 2.5;
+        const bgX = -(lensX * zoomFactor - lens.offsetWidth / 2);
+        const bgY = -(lensY * zoomFactor - lens.offsetHeight / 2);
+
+        lens.style.backgroundImage = `url('${image.src}')`;
+        lens.style.backgroundSize = (rect.width * zoomFactor) + 'px ' + (rect.height * zoomFactor) + 'px';
+        lens.style.backgroundPosition = bgX + 'px ' + bgY + 'px';
+    });
+
+    container.addEventListener('mouseleave', function() {
+        lens.style.display = 'none';
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+<style>
+    .page-header { background: #f8f8f8; padding: 40px; border-bottom: 1px solid #e0e0e0; }
+    .page-header h1 { font-size: 1.8rem; font-weight: 900; color: #1a1a1a; margin: 0; }
+    .container-custom { max-width: 1200px; margin: 0 auto; padding: 40px; }
+    .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
+    .order-card { background: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; transition: all 0.2s ease; }
+    .order-card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.12); }
+    .order-id { color: #999; font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; }
+    .order-date { font-size: 0.9rem; color: #666; margin-bottom: 15px; }
+    .order-status { display: inline-block; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; background: #27ae60; color: white; margin-bottom: 15px; }
+    .order-total { font-size: 1.3rem; font-weight: 900; color: #1a1a1a; margin-bottom: 15px; }
+    .order-btn { background: #1a1a1a; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: all 0.2s ease; text-decoration: none; display: inline-block; }
+    .order-btn:hover { background: #2d2d2d; }
+    .empty-orders { text-align: center; padding: 80px 40px; }
+    .empty-orders h2 { font-size: 1.6rem; font-weight: 900; color: #1a1a1a; margin-bottom: 12px; }
+    .empty-orders p { color: #666; margin-bottom: 25px; }
+    .order-detail-container { max-width: 1200px; margin: 0 auto; padding: 40px; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 350px; gap: 40px; }
+    .items-list { background: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; }
+    .item { display: flex; gap: 20px; padding: 20px 0; border-bottom: 1px solid #e0e0e0; }
+    .item:last-child { border-bottom: none; }
+    .item-image { width: 100px; height: 100px; background: #f8f8f8; border-radius: 6px; flex-shrink: 0; }
+    .item-info h3 { margin: 0 0 8px 0; font-weight: 700; }
+    .item-info p { margin: 0; color: #999; font-size: 0.9rem; }
+    .item-price { margin-left: auto; text-align: right; font-weight: 900; }
+    .order-info { background: white; padding: 25px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; height: fit-content; }
+    .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e0e0e0; }
+    .info-row:last-child { border-bottom: none; }
+    @media (max-width: 1024px) { .detail-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .orders-grid { grid-template-columns: 1fr; } }
+</style>
+
+{% if orders %}
+<div class="page-header">
+    <h1>سفارش‌های من</h1>
+</div>
+
+<div class="container-custom">
+    <div class="orders-grid">
+        {% for order in orders %}
+        <div class="order-card">
+            <div class="order-id">#{{ order.id }}</div>
+            <div class="order-date">{{ order.created_at|date:"d M Y" }}</div>
+            <div class="order-status">{{ order.get_status_display }}</div>
+            <div class="order-total">{{ order.total_price|floatformat:0 }} تومان</div>
+            <a href="{% url 'orders:order_detail' order.id %}" class="order-btn">مشاهده جزئیات</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="page-header">
+    <h1>سفارش‌های من</h1>
+</div>
+
+<div class="container-custom">
+    <div class="empty-orders">
+        <h2>سفارشی نشده است</h2>
+        <p>هنوز هیچ سفارشی ثبت نکردید</p>
+        <a href="{% url 'products:product_list' %}" class="order-btn">شروع خرید</a>
+    </div>
+</div>
+{% endif %}
+
+{% if order %}
+<div class="page-header">
+    <h1>سفارش #{{ order.id }}</h1>
+</div>
+
+<div class="order-detail-container">
+    <div class="detail-grid">
+        <div class="items-list">
+            {% for item in order.items.all %}
+            <div class="item">
+                <div class="item-image"></div>
+                <div class="item-info">
+                    <h3>نام محصول</h3>
+                    <p>سایز: M</p>
+                </div>
+                <div class="item-price">۱۵۰,۰۰۰</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="order-info">
+            <div class="info-row">
+                <span>وضعیت:</span>
+                <strong>{{ order.get_status_display }}</strong>
+            </div>
+            <div class="info-row">
+                <span>تاریخ:</span>
+                <strong>{{ order.created_at|date:"d M Y" }}</strong>
+            </div>
+            <div class="info-row">
+                <span>آدرس:</span>
+                <strong>{{ order.shipping_address }}</strong>
+            </div>
+            <div class="info-row">
+                <span>کل:</span>
+                <strong>{{ order.total_price|floatformat:0 }} تومان</strong>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

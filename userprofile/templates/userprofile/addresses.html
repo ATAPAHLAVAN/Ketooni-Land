@@ -1,0 +1,195 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}آدرس‌های من - کتونی لند{% endblock %}
+
+{% block content %}
+
+<style>
+    .addresses-header {
+        background: linear-gradient(135deg, #1a202c 0%, #2c3e50 100%);
+        color: white;
+        padding: 60px 40px;
+        text-align: center;
+        border-bottom: 2px solid #00D9FF;
+    }
+
+    .addresses-header h1 {
+        font-size: 2.8rem;
+        font-weight: 950;
+        margin-bottom: 10px;
+    }
+
+    .addresses-header h1 span {
+        color: #00D9FF;
+    }
+
+    .addresses-container {
+        padding: 50px 40px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .add-address-btn {
+        display: inline-block;
+        padding: 14px 35px;
+        background: linear-gradient(135deg, #00D9FF 0%, #1DD1A1 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 950;
+        margin-bottom: 40px;
+        transition: all 0.3s ease;
+    }
+
+    .add-address-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 217, 255, 0.3);
+    }
+
+    .addresses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+    }
+
+    .address-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
+        position: relative;
+    }
+
+    .address-card:hover {
+        border: 2px solid #00D9FF;
+        box-shadow: 0 15px 40px rgba(0, 217, 255, 0.2);
+        transform: translateY(-8px);
+    }
+
+    .address-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #00D9FF 0%, #1DD1A1 100%);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 900;
+    }
+
+    .address-title {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: #1a202c;
+        margin-bottom: 15px;
+        margin-top: 10px;
+    }
+
+    .address-info {
+        color: #718096;
+        font-size: 0.9rem;
+        line-height: 1.8;
+        margin-bottom: 18px;
+    }
+
+    .address-actions {
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 15px;
+    }
+
+    .address-btn-edit {
+        flex: 1;
+        padding: 10px;
+        background: linear-gradient(135deg, #00D9FF 0%, #1DD1A1 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 900;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .address-btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 217, 255, 0.3);
+    }
+
+    .address-btn-delete {
+        flex: 1;
+        padding: 10px;
+        background: #fed7d7;
+        color: #c53030;
+        border: none;
+        border-radius: 6px;
+        font-weight: 900;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+    }
+
+    .address-btn-delete:hover {
+        background: #fc8181;
+        color: white;
+    }
+
+    .empty-addresses {
+        text-align: center;
+        padding: 80px 40px;
+        color: #718096;
+    }
+
+    .empty-addresses h2 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: #1a202c;
+        margin-bottom: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .addresses-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="addresses-header">
+    <h1>آدرس‌های <span>من</span></h1>
+</div>
+
+<div class="addresses-container">
+    <a href="{% url 'userprofile:add_address' %}" class="add-address-btn">
+        افزودن آدرس جدید
+    </a>
+
+    <div class="addresses-grid">
+        <div class="address-card">
+            <div class="address-badge">پیش‌فرض</div>
+            <h3 class="address-title">خانه</h3>
+            <div class="address-info">
+                <strong>نام:</strong> احمد محمدی<br>
+                <strong>تلفن:</strong> 09120000000<br>
+                <strong>آدرس:</strong> تهران، خیابان شهرداری<br>
+                <strong>کد پستی:</strong> 1234567890
+            </div>
+            <div class="address-actions">
+                <a href="#" class="address-btn-edit">ویرایش</a>
+                <button class="address-btn-delete">حذف</button>
+            </div>
+        </div>
+
+        <div class="empty-addresses" style="grid-column: 1 / -1;">
+            <h2>هنوز آدرس اضافه نکرده‌اید</h2>
+            <p>برای شروع، آدرس جدیدی اضافه کنید</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

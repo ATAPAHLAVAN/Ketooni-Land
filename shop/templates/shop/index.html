@@ -1,0 +1,366 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}کتونی لند | فروشگاه کفش و کتونی{% endblock %}
+
+{% block content %}
+
+<!-- ============ INTRO ANIMATION OVERLAY ============ -->
+<div id="introOverlay" class="intro-overlay">
+    <div class="intro-glow-1"></div>
+    <div class="intro-glow-2"></div>
+    <div class="intro-content">
+        <div class="intro-shoe-track">
+            <div class="intro-shoe-shadow"></div>
+            <svg class="intro-shoe" width="240" height="140" viewBox="0 0 240 140" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="soleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#f5f5f5"/>
+                        <stop offset="100%" style="stop-color:#d8d8d8"/>
+                    </linearGradient>
+                    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ff3b3b"/>
+                        <stop offset="55%" style="stop-color:#e42323"/>
+                        <stop offset="100%" style="stop-color:#b91414"/>
+                    </linearGradient>
+                    <linearGradient id="swooshGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#ffffff"/>
+                        <stop offset="100%" style="stop-color:#f0f0f0"/>
+                    </linearGradient>
+                </defs>
+                <path d="M15,110 Q10,120 25,124 L205,124 Q222,122 220,108 Q215,100 195,98 L45,96 Q22,98 15,110 Z" fill="url(#soleGrad)"/>
+                <path d="M20,108 Q40,102 100,101 L200,103" stroke="#bbbbbb" stroke-width="1.5" fill="none" opacity="0.6"/>
+                <path d="M20,98 C18,80 28,62 55,52 L100,35 C120,27 145,27 162,36 L205,58 C218,64 222,76 218,88 L212,98 Q210,102 200,102 L35,102 Q20,102 20,98 Z" fill="url(#bodyGrad)"/>
+                <path d="M20,98 C18,84 25,70 42,60 C48,66 46,80 46,92 C46,97 40,100 32,100 C24,100 20,99 20,98 Z" fill="#7a0d0d" opacity="0.85"/>
+                <path d="M55,88 C85,70 130,55 195,62 C160,60 110,72 80,95 C72,100 60,98 55,88 Z" fill="url(#swooshGrad)"/>
+                <path d="M100,40 L150,55 L145,70 L95,58 Z" fill="#5c0d0d" opacity="0.5"/>
+                <line x1="103" y1="45" x2="140" y2="58" stroke="#ffffff" stroke-width="2" opacity="0.7"/>
+                <line x1="100" y1="52" x2="137" y2="65" stroke="#ffffff" stroke-width="2" opacity="0.7"/>
+                <line x1="97" y1="59" x2="132" y2="71" stroke="#ffffff" stroke-width="2" opacity="0.7"/>
+                <path d="M160,36 C178,30 200,38 208,52 C212,58 210,64 204,62 C196,50 178,42 162,44 C158,42 158,38 160,36 Z" fill="#7a0d0d"/>
+                <ellipse cx="195" cy="70" rx="14" ry="20" fill="#ffffff" opacity="0.12"/>
+            </svg>
+        </div>
+        <div class="intro-logo">
+            <span class="intro-letter" style="animation-delay:0.1s">K</span>
+            <span class="intro-letter" style="animation-delay:0.15s">E</span>
+            <span class="intro-letter" style="animation-delay:0.2s">T</span>
+            <span class="intro-letter" style="animation-delay:0.25s">O</span>
+            <span class="intro-letter" style="animation-delay:0.3s">O</span>
+            <span class="intro-letter" style="animation-delay:0.35s">N</span>
+            <span class="intro-letter" style="animation-delay:0.4s">I</span>
+            <span class="intro-letter" style="animation-delay:0.45s">L</span>
+            <span class="intro-letter" style="animation-delay:0.5s">A</span>
+            <span class="intro-letter" style="animation-delay:0.55s">N</span>
+            <span class="intro-letter" style="animation-delay:0.6s">D</span>
+        </div>
+        <div class="intro-tagline">کفش و کتونی پرایم</div>
+        <div class="intro-progress"><div class="intro-progress-bar"></div></div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --royal: #7C3AED;
+        --royal-light: #A78BFA;
+        --rose-gold: #F59E0B;
+        --rose-gold-light: #FCD34D;
+        --ink: #0B0B14;
+        --ink-light: #17172b;
+    }
+
+    /* ============ INTRO ============ */
+    .intro-overlay {
+        position: fixed; inset: 0;
+        background: radial-gradient(ellipse at center, #1e1033 0%, #0B0B14 55%, #050508 100%);
+        z-index: 99999; display: flex; align-items: center; justify-content: center;
+        transition: opacity 0.8s ease, visibility 0.8s ease; overflow: hidden;
+    }
+    .intro-overlay.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+    .intro-glow-1 { position: absolute; width: 500px; height: 500px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(124,58,237,0.28) 0%, transparent 70%);
+        top: -150px; left: -100px; animation: introFloatGlow 5s ease-in-out infinite; }
+    .intro-glow-2 { position: absolute; width: 450px; height: 450px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%);
+        bottom: -150px; right: -100px; animation: introFloatGlow 6s ease-in-out infinite reverse; }
+    @keyframes introFloatGlow { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-25px) scale(1.08); } }
+    .intro-content { text-align: center; position: relative; z-index: 2; }
+    .intro-shoe-track { width: 300px; height: 130px; margin: 0 auto 25px; position: relative; }
+    .intro-shoe-shadow { position: absolute; bottom: 8px; left: 50%; width: 130px; height: 18px;
+        background: radial-gradient(ellipse, rgba(0,0,0,0.55) 0%, transparent 75%);
+        transform: translateX(-50%); animation: introShadowPulse 0.4s ease-in-out infinite; }
+    @keyframes introShadowPulse { 0%,100% { opacity: 0.5; transform: translateX(-50%) scaleX(1); } 50% { opacity: 0.7; transform: translateX(-50%) scaleX(0.85); } }
+    .intro-shoe { position: absolute; left: -100px; top: 8px;
+        animation: introShoeWalk 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards, introShoeBounce 0.4s ease-in-out infinite;
+        filter: drop-shadow(0 12px 18px rgba(255, 59, 59, 0.4)); }
+    @keyframes introShoeWalk { 0% { left: -100px; } 100% { left: 50%; margin-left: -120px; } }
+    @keyframes introShoeBounce { 0%, 100% { margin-top: 0; } 50% { margin-top: -8px; } }
+    .intro-logo { font-size: 2.6rem; font-weight: 900; letter-spacing: 3px; }
+    .intro-letter { display: inline-block; background: linear-gradient(135deg, var(--royal-light), var(--rose-gold-light));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        opacity: 0; transform: translateY(20px); animation: introLetterIn 0.5s ease forwards; }
+    @keyframes introLetterIn { to { opacity: 1; transform: translateY(0); } }
+    .intro-tagline { color: rgba(255,255,255,0.55); font-size: 0.95rem; margin-top: 12px; letter-spacing: 2px;
+        opacity: 0; animation: introFadeIn 0.6s ease 0.8s forwards; }
+    @keyframes introFadeIn { to { opacity: 1; } }
+    .intro-progress { width: 180px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 10px; margin: 30px auto 0; overflow: hidden; }
+    .intro-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--royal-light), var(--rose-gold)); border-radius: 10px; animation: introProgress 1.8s ease forwards; }
+    @keyframes introProgress { to { width: 100%; } }
+    body.intro-active { overflow: hidden; }
+
+    /* ============ SHARED ANIMATIONS ============ */
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-18px); } }
+    @keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(124,58,237,0.35); } 50% { box-shadow: 0 0 40px rgba(245,158,11,0.5); } }
+    @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    * { scroll-behavior: smooth; }
+
+    /* ============ HERO ============ */
+    .hero-ultra {
+        background: 
+            radial-gradient(circle at 15% 20%, rgba(124,58,237,0.18) 0%, transparent 45%),
+            radial-gradient(circle at 85% 80%, rgba(245,158,11,0.14) 0%, transparent 45%),
+            linear-gradient(-45deg, var(--ink) 0%, var(--ink-light) 50%, #150e26 100%);
+        background-size: 100% 100%, 100% 100%, 400% 400%;
+        animation: gradientShift 14s ease infinite;
+        padding: 100px 40px; text-align: center; min-height: 700px;
+        display: flex; align-items: center; justify-content: center;
+        position: relative; overflow: hidden;
+    }
+    .hero-ultra::before {
+        content: ''; position: absolute; inset: 0; opacity: 0.4;
+        background-image: radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px);
+        background-size: 26px 26px;
+    }
+    .hero-ultra::after {
+        content: ''; position: absolute; width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%);
+        bottom: -200px; left: -200px; border-radius: 50%; animation: float 10s ease-in-out infinite reverse;
+    }
+    .hero-particles { position: absolute; width: 100%; height: 100%; top: 0; left: 0; overflow: hidden; pointer-events: none; }
+    .particle { position: absolute; width: 4px; height: 4px; background: var(--royal-light); border-radius: 50%; opacity: 0.6; animation: float 6s ease-in-out infinite; }
+    .hero-content-ultra { position: relative; z-index: 2; max-width: 950px; }
+    .hero-badge { display: inline-block; background: rgba(124,58,237,0.12); border: 1px solid rgba(245,158,11,0.35);
+        color: var(--rose-gold-light); padding: 8px 24px; border-radius: 50px; font-size: 0.85rem; font-weight: 900;
+        margin-bottom: 25px; backdrop-filter: blur(10px); animation: fadeInDown 1s ease, glow 3s ease-in-out infinite; letter-spacing: 1px; }
+    .hero-ultra h1 { font-size: 4.2rem; font-weight: 900; color: white; margin-bottom: 20px; letter-spacing: 1px;
+        animation: fadeInDown 1s ease 0.1s both; line-height: 1.2; text-shadow: 0 0 40px rgba(124,58,237,0.3); }
+    .hero-ultra h1 .gradient-text { background: linear-gradient(135deg, var(--royal-light) 0%, var(--rose-gold) 50%, var(--royal-light) 100%);
+        background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text; animation: gradientShift 3s linear infinite; }
+    .hero-ultra p { font-size: 1.3rem; color: rgba(255, 255, 255, 0.85); margin-bottom: 45px;
+        animation: fadeInUp 1s ease 0.3s both; line-height: 1.8; max-width: 650px; margin-left: auto; margin-right: auto; }
+    .hero-buttons-ultra { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; animation: fadeInUp 1s ease 0.5s both; }
+    .btn-ultra { padding: 17px 48px; font-size: 1.05rem; font-weight: 900; border: none; border-radius: 12px; cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); text-decoration: none; display: inline-flex;
+        align-items: center; gap: 10px; letter-spacing: 0.5px; position: relative; overflow: hidden; }
+    .btn-primary-ultra { background: linear-gradient(135deg, var(--royal) 0%, var(--rose-gold) 100%); color: white; box-shadow: 0 10px 40px rgba(124,58,237,0.4); }
+    .btn-primary-ultra::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); transition: left 0.6s ease; }
+    .btn-primary-ultra:hover::before { left: 100%; }
+    .btn-primary-ultra:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 20px 60px rgba(124,58,237,0.6); }
+    .btn-secondary-ultra { background: rgba(255, 255, 255, 0.05); color: var(--rose-gold-light); border: 2px solid rgba(245,158,11,0.4); backdrop-filter: blur(10px); }
+    .btn-secondary-ultra:hover { background: rgba(245,158,11,0.1); border-color: var(--rose-gold); transform: translateY(-6px) scale(1.03); box-shadow: 0 20px 50px rgba(245,158,11,0.25); }
+    .hero-stats { display: flex; justify-content: center; gap: 60px; margin-top: 60px; animation: fadeInUp 1s ease 0.7s both; flex-wrap: wrap; }
+    .stat-item { text-align: center; }
+    .stat-number { font-size: 2.2rem; font-weight: 950; background: linear-gradient(135deg, var(--royal-light), var(--rose-gold));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: block; }
+    .stat-label { color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-weight: 700; margin-top: 5px; }
+
+    /* ============ BRAND MARQUEE STRIP ============ */
+    .brand-strip { background: white; padding: 22px 0; overflow: hidden; border-bottom: 1px solid #eee; }
+    .marquee-track { display: flex; width: max-content; animation: marquee 22s linear infinite; gap: 60px; align-items: center; }
+    .marquee-item { font-weight: 900; font-size: 1.2rem; color: #cbd5e0; letter-spacing: 2px; white-space: nowrap; transition: color .3s; }
+    .marquee-item:hover { color: var(--royal); }
+
+    /* ============ CATEGORIES ============ */
+    .categories-ultra { padding: 90px 40px; background: linear-gradient(180deg, #faf9fc 0%, white 100%); position: relative; }
+    .section-header-ultra { text-align: center; margin-bottom: 60px; }
+    .section-badge { display: inline-block; background: rgba(124,58,237,0.08); color: var(--royal); padding: 6px 20px; border-radius: 50px; font-size: 0.8rem; font-weight: 900; margin-bottom: 15px; letter-spacing: 1px; }
+    .section-header-ultra h2 { font-size: 2.8rem; font-weight: 950; color: #1a1a2e; margin-bottom: 10px; letter-spacing: -0.5px; }
+    .section-header-ultra h2 span { background: linear-gradient(135deg, var(--royal), var(--rose-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .section-header-ultra p { color: #718096; font-size: 1rem; font-weight: 600; }
+
+    .categories-grid-ultra { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 24px; max-width: 1300px; margin: 0 auto; }
+    .category-card-ultra { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); position: relative; opacity: 0; animation: fadeInUp 0.6s ease forwards; }
+    .category-card-ultra:nth-child(1) { animation-delay: 0.05s; } .category-card-ultra:nth-child(2) { animation-delay: 0.1s; }
+    .category-card-ultra:nth-child(3) { animation-delay: 0.15s; } .category-card-ultra:nth-child(4) { animation-delay: 0.2s; }
+    .category-card-ultra:nth-child(5) { animation-delay: 0.25s; } .category-card-ultra:nth-child(6) { animation-delay: 0.3s; }
+    .category-card-ultra:nth-child(7) { animation-delay: 0.35s; } .category-card-ultra:nth-child(8) { animation-delay: 0.4s; }
+    .category-card-ultra:hover { transform: translateY(-14px); box-shadow: 0 25px 50px rgba(124,58,237,0.22); }
+    .category-image-ultra { height: 170px; background: linear-gradient(135deg, var(--ink) 0%, #241a3d 100%); display: flex; align-items: center; justify-content: center; font-size: 3rem; overflow: hidden; position: relative; }
+    .category-image-ultra::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.5) 100%); opacity: 0; transition: opacity 0.4s ease; }
+    .category-card-ultra:hover .category-image-ultra::after { opacity: 1; }
+    .category-image-ultra img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .category-card-ultra:hover .category-image-ultra img { transform: scale(1.15) rotate(1deg); }
+    .category-info-ultra { padding: 18px; text-align: center; }
+    .category-name-ultra { font-size: 1.1rem; font-weight: 900; color: #1a1a2e; margin-bottom: 6px; transition: color 0.3s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .category-card-ultra:hover .category-name--ultra { color: var(--royal); }
+    .category-count-ultra { color: var(--royal); font-weight: 800; margin-bottom: 12px; font-size: 0.82rem; }
+    .category-btn-ultra { width: 100%; padding: 10px; background: linear-gradient(135deg, var(--royal) 0%, var(--rose-gold) 100%); color: white;
+        border: none; border-radius: 8px; font-weight: 900; cursor: pointer; transition: all 0.3s ease;
+        text-decoration: none; display: block; font-size: 0.85rem; position: relative; overflow: hidden; }
+    .category-btn-ultra:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(124,58,237,0.4); }
+
+    /* ============ FEATURES (GLASSMORPHISM) ============ */
+    .features-ultra { padding: 90px 40px; background: linear-gradient(135deg, var(--ink) 0%, var(--ink-light) 100%); position: relative; overflow: hidden; }
+    .features-ultra::before { content: ''; position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); }
+    .features-ultra .section-header-ultra h2 { color: white; }
+    .features-ultra .section-header-ultra p { color: rgba(255, 255, 255, 0.6); }
+    .features-grid-ultra { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; max-width: 1300px; margin: 0 auto; position: relative; z-index: 2; }
+    .feature-card-ultra { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); padding: 38px 30px; border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.08); text-align: center; transition: all 0.4s ease; opacity: 0; animation: scaleIn 0.6s ease forwards; }
+    .feature-card-ultra:nth-child(1) { animation-delay: 0.05s; } .feature-card-ultra:nth-child(2) { animation-delay: 0.1s; }
+    .feature-card-ultra:nth-child(3) { animation-delay: 0.15s; } .feature-card-ultra:nth-child(4) { animation-delay: 0.2s; }
+    .feature-card-ultra:nth-child(5) { animation-delay: 0.25s; } .feature-card-ultra:nth-child(6) { animation-delay: 0.3s; }
+    .feature-card-ultra:hover { transform: translateY(-10px); background: rgba(124,58,237,0.07); border-color: rgba(245,158,11,0.35); box-shadow: 0 20px 50px rgba(124,58,237,0.15); }
+    .feature-icon-ultra { width: 60px; height: 60px; margin: 0 auto 18px; background: linear-gradient(135deg, rgba(124,58,237,0.18), rgba(245,158,11,0.18));
+        border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+        animation: float 4s ease-in-out infinite; border: 1px solid rgba(245,158,11,0.25); }
+    .feature-title-ultra { font-size: 1.15rem; font-weight: 900; color: white; margin-bottom: 8px; }
+    .feature-text-ultra { color: rgba(255, 255, 255, 0.55); font-size: 0.9rem; line-height: 1.6; }
+
+    /* ============ NEWSLETTER ============ */
+    .newsletter-ultra { background: linear-gradient(135deg, var(--royal) 0%, var(--rose-gold) 100%); padding: 80px 40px; text-align: center; position: relative; overflow: hidden; }
+    .newsletter-ultra::before { content: ''; position: absolute; width: 400px; height: 400px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; top: -150px; right: -100px; }
+    .newsletter-content { position: relative; z-index: 2; }
+    .newsletter-ultra h2 { font-size: 2.4rem; font-weight: 950; margin-bottom: 12px; color: #0B0B14; }
+    .newsletter-ultra p { font-size: 1.05rem; margin-bottom: 35px; color: rgba(11, 11, 20, 0.75); font-weight: 600; }
+    .newsletter-form-ultra { display: flex; gap: 12px; max-width: 550px; margin: 0 auto; }
+    .newsletter-input-ultra { flex: 1; padding: 16px 20px; border: none; border-radius: 12px; background: rgba(11, 11, 20, 0.95); color: white; font-size: 0.95rem; transition: all 0.3s ease; }
+    .newsletter-input-ultra::placeholder { color: rgba(255,255,255,0.5); }
+    .newsletter-input-ultra:focus { outline: none; box-shadow: 0 0 0 4px rgba(11, 11, 20, 0.2); }
+    .newsletter-btn-ultra { padding: 16px 36px; background: #0B0B14; color: var(--rose-gold-light); border: none; border-radius: 12px; font-weight: 900; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
+    .newsletter-btn-ultra:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); }
+
+    @media (max-width: 768px) {
+        .hero-ultra { padding: 70px 20px; min-height: 550px; }
+        .hero-ultra h1 { font-size: 2.4rem; }
+        .hero-stats { gap: 30px; }
+        .section-header-ultra h2 { font-size: 2rem; }
+        .categories-grid-ultra { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+.category-image-ultra { height: 140px; font-size: 2.5rem; }
+.category-info-ultra { padding: 14px; }
+.category-name-ultra { font-size: 1rem; }
+.category-btn-ultra { padding: 12px; font-size: 0.9rem; }
+        .newsletter-form-ultra { flex-direction: column; }
+        .newsletter-btn-ultra { width: 100%; }
+    }
+</style>
+
+<!-- HERO -->
+<section class="hero-ultra">
+    <div class="hero-particles">
+        <div class="particle" style="top:20%; left:10%; animation-delay:0s;"></div>
+        <div class="particle" style="top:60%; left:80%; animation-delay:1s;"></div>
+        <div class="particle" style="top:30%; left:70%; animation-delay:2s;"></div>
+        <div class="particle" style="top:80%; left:20%; animation-delay:1.5s;"></div>
+        <div class="particle" style="top:15%; left:50%; animation-delay:0.5s;"></div>
+    </div>
+    <div class="hero-content-ultra">
+        <span class="hero-badge">✦ برند اصل و ضمانت‌دار</span>
+        <h1>کفش و کتونی <span class="gradient-text">پرایم</span></h1>
+        <p>بهترین انتخاب برای پای شما با قیمت رقابتی و کیفیت تضمینی از برندهای معتبر جهانی</p>
+        <div class="hero-buttons-ultra">
+            <a href="{% url 'products:product_list' %}" class="btn-ultra btn-primary-ultra">مرور محصول‌ها</a>
+            <a href="{% url 'categories:list' %}" class="btn-ultra btn-secondary-ultra">دسته‌بندی‌ها</a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat-item"><span class="stat-number">+80</span><span class="stat-label">محصول اصل</span></div>
+            <div class="stat-item"><span class="stat-number">8</span><span class="stat-label">برند معتبر</span></div>
+            <div class="stat-item"><span class="stat-number">24/7</span><span class="stat-label">پشتیبانی</span></div>
+        </div>
+        </div>
+</section>
+
+<!-- BRAND MARQUEE -->
+<div class="brand-strip">
+    <div class="marquee-track">
+        <span class="marquee-item">NIKE</span><span class="marquee-item">ADIDAS</span><span class="marquee-item">BALENCIAGA</span>
+        <span class="marquee-item">PUMA</span><span class="marquee-item">NEW BALANCE</span><span class="marquee-item">CONVERSE</span>
+        <span class="marquee-item">VANS</span><span class="marquee-item">JORDAN</span>
+        <span class="marquee-item">NIKE</span><span class="marquee-item">ADIDAS</span><span class="marquee-item">BALENCIAGA</span>
+        <span class="marquee-item">PUMA</span><span class="marquee-item">NEW BALANCE</span><span class="marquee-item">CONVERSE</span>
+        <span class="marquee-item">VANS</span><span class="marquee-item">JORDAN</span>
+    </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="categories-ultra">
+    <div class="section-header-ultra">
+        <span class="section-badge">دسته‌بندی‌ها</span>
+        <h2>انتخاب <span>برند</span></h2>
+        <p>محبوب‌ترین برندهای دنیا در یک‌جا</p>
+    </div>
+    <div class="categories-grid-ultra">
+        {% for category in categories %}
+        <div class="category-card-ultra">
+            <div class="category-image-ultra">
+                {% if category.image %}<img src="{{ category.image.url }}" alt="{{ category.name }}">{% else %}👟{% endif %}
+            </div>
+            <div class="category-info-ultra">
+                <h3 class="category-name-ultra">{{ category.name }}</h3>
+                <p class="category-count-ultra">{{ category.product_set.count }} محصول</p>
+                <a href="{% url 'products:category' category.slug %}" class="category-btn-ultra">مرور</a>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: #718096;"><p>دسته‌بندی موجود نیست</p></div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-ultra">
+    <div class="section-header-ultra">
+        <span class="section-badge">مزیت‌های ما</span>
+        <h2>چرا <span>ما؟</span></h2>
+        <p>بهترین انتخاب برای شما</p>
+    </div>
+    <div class="features-grid-ultra">
+        <div class="feature-card-ultra"><div class="feature-icon-ultra">✓</div><h3 class="feature-title-ultra">محصول اصل</h3><p class="feature-text-ultra">۱۰۰٪ معتبر و ضمانت‌دار</p></div>
+        <div class="feature-card-ultra"><div class="feature-icon-ultra">⚡</div><h3 class="feature-title-ultra">ارسال سریع</h3><p class="feature-text-ultra">۲۴ ساعت به سراسر کشور</p></div>
+        <div class="feature-card-ultra"><div class="feature-icon-ultra">💎</div><h3 class="feature-title-ultra">قیمت بهترین</h3><p class="feature-text-ultra">رقابتی‌ترین قیمت بازار</p></div>
+        <div class="feature-card-ultra"><div class="feature-icon-ultra">🎧</div><h3 class="feature-title-ultra">پشتیبانی ۲۴/۷</h3><p class="feature-text-ultra">تیم آماده برای کمک</p></div>
+        <div class="feature-card-ultra"><div class="feature-icon-ultra">↩</div><h3 class="feature-title-ultra">بازگشت آسان</h3><p class="feature-text-ultra">۳۰ روز حق بازگشت</p></div>
+        <div class="feature-card-ultra"><div class="feature-icon-ultra">🎁</div><h3 class="feature-title-ultra">جوایز خاص</h3><p class="feature-text-ultra">برنامهٔ وفاداری اعضا</p></div>
+    </div>
+</section>
+<!-- NEWSLETTER -->
+<section class="newsletter-ultra">
+    <div class="newsletter-content">
+        <h2>اخبار و پیشنهادات ویژه</h2>
+        <p>تخفیف‌ها و محصول‌های جدید را زودتر از همه دریافت کنید</p>
+        <form class="newsletter-form-ultra">
+            <input type="email" class="newsletter-input-ultra" placeholder="ایمیل خود را وارد کنید..." required>
+            <button type="submit" class="newsletter-btn-ultra">عضویت</button>
+        </form>
+    </div>
+</section>
+
+<script>
+document.body.classList.add('intro-active');
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        const overlay = document.getElementById('introOverlay');
+        if (overlay) {
+            overlay.classList.add('hide');
+            document.body.classList.remove('intro-active');
+            setTimeout(function() { overlay.remove(); }, 800);
+        }
+    }, 2200);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity = '1'; } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.category-card-ultra, .feature-card-ultra').forEach(el => observer.observe(el));
+});
+</script>
+{% endblock %}

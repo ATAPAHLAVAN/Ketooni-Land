@@ -1,0 +1,121 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}جزئیات سفارش - کتونی لند{% endblock %}
+{% block content %}
+<style>
+    @keyframes gradientShift { 0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;} }
+
+    .order-header {
+        background: linear-gradient(-45deg, #0a0e14, #1a202c, #2c1a3d, #1a202c);
+        background-size: 300% 300%; animation: gradientShift 10s ease infinite;
+        color: white; padding: 55px 40px; text-align: center; position: relative;
+    }
+    .order-header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+        background: linear-gradient(90deg, transparent, #8B5CF6, #FFB800, #8B5CF6, transparent); }
+    .order-header h1 { font-size: 2.3rem; font-weight: 950; }
+    .order-header h1 span { background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .order-container { padding: 50px 40px; max-width: 1000px; margin: 0 auto; }
+
+    .status-badge-row { text-align: center; margin-bottom: 30px; }
+    .status-badge {
+        display: inline-block; padding: 10px 28px; border-radius: 50px; font-weight: 900; font-size: 0.95rem;
+    }
+    .status-badge.pending { background: #fef3c7; color: #92400e; }
+    .status-badge.paid { background: #d1fae5; color: #065f46; }
+    .status-badge.shipped { background: #dbeafe; color: #1e40af; }
+    .status-badge.delivered { background: #dcfce7; color: #166534; }
+    .status-badge.cancelled { background: #fed7d7; color: #c53030; }
+
+    .action-buttons { display: flex; gap: 15px; justify-content: center; margin-bottom: 35px; flex-wrap: wrap; }
+    .btn-invoice {
+        display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px;
+        background: linear-gradient(135deg, #8B5CF6, #FFB800); color: white; border-radius: 12px;
+        text-decoration: none; font-weight: 900; transition: all .3s ease;
+    }
+    .btn-invoice:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(139,92,246,0.4); color: white; }
+    .btn-cancel {
+        display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px;
+        background: white; color: #c53030; border: 2px solid #c53030; border-radius: 12px;
+        text-decoration: none; font-weight: 900; transition: all .3s ease; cursor: pointer;
+    }
+    .btn-cancel:hover { background: #fed7d7; }
+
+    .order-card { background: white; border-radius: 18px; padding: 35px; border: 2px solid #e2e8f0; margin-bottom: 25px; }
+    .order-card-title { font-size: 1.3rem; font-weight: 950; color: #1a202c; margin-bottom: 20px;
+        padding-bottom: 12px; border-bottom: 2px solid #8B5CF6; }
+    .order-card-title span { background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .info-item { background: #f7fafc; border-radius: 10px; padding: 14px 18px; border-right: 3px solid #8B5CF6; }
+    .info-label { font-weight: 900; color: #1a202c; font-size: 0.8rem; display: block; margin-bottom: 4px; }
+    .info-value { color: #4a5568; font-size: 0.95rem; }
+
+    .item-row {
+        display: flex; justify-content: space-between; align-items: center; padding: 16px 0;
+        border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px;
+    }
+    .item-row:last-child { border-bottom: none; }
+    .item-name { font-weight: 900; color: #1a202c; }
+    .item-meta { color: #718096; font-size: 0.85rem; }
+    .item-price { color: #8B5CF6; font-weight: 900; }
+
+    .total-row {
+        display: flex; justify-content: space-between; align-items: center; padding-top: 20px;
+        margin-top: 15px; border-top: 2px solid #e2e8f0; font-size: 1.4rem; font-weight: 950;
+    }
+    .total-row span:last-child { background: linear-gradient(135deg, #8B5CF6, #FFB800);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="order-header">
+    <h1>سفارش <span>#{{ order.id }}</span></h1>
+</div>
+
+<div class="order-container">
+    <div class="status-badge-row">
+        <span class="status-badge {{ order.status }}">{{ order.get_status_display }}</span>
+    </div>
+
+    <div class="action-buttons">
+        <a href="{% url 'orders:download_invoice' order.id %}" class="btn-invoice">📄 دانلود فاکتور PDF</a>
+        {% if order.status == 'pending' %}
+        <form method="POST" action="{% url 'orders:cancel_order' order.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-cancel">لغو سفارش</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="order-card">
+        <h2 class="order-card-title">اطلاعات <span>ارسال</span></h2>
+        <div class="info-grid">
+            <div class="info-item"><span class="info-label">نام مشتری</span><span class="info-value">{{ order.customer_name }}</span></div>
+            <div class="info-item"><span class="info-label">تلفن</span><span class="info-value">{{ order.phone }}</span></div>
+            <div class="info-item" style="grid-column: 1 / -1;"><span class="info-label">آدرس</span><span class="info-value">{{ order.address }}</span></div>
+            <div class="info-item"><span class="info-label">تاریخ ثبت</span><span class="info-value">{{ order.created_at|date:"Y/m/d - H:i" }}</span></div>
+        </div>
+    </div>
+
+    <div class="order-card">
+        <h2 class="order-card-title">محصولات <span>سفارش</span></h2>
+        {% for item in order.items.all %}
+        <div class="item-row">
+            <div>
+                <div class="item-name">{{ item.product.name }}</div>
+                <div class="item-meta">{% if item.size %}سایز {{ item.size }} · {% endif %}{{ item.quantity }} عدد</div>
+            </div>
+            <div class="item-price">{{ item.price|floatformat:0 }} تومان</div>
+        </div>
+        {% endfor %}
+        <div class="total-row">
+            <span>جمع کل:</span>
+            <span>{{ order.total_price|floatformat:0 }} تومان</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
